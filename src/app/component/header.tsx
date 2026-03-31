@@ -2,7 +2,9 @@
 import { IoSearch } from "react-icons/io5";
 import { useState, useRef, useEffect } from "react";
 import { FaSignInAlt } from "react-icons/fa";
+import { Info, MapPin, Users } from "lucide-react";
 import Link from "next/link";
+import { FaMap, FaUsers } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RiUserCommunityFill } from "react-icons/ri";
 import { FaUser, FaCog, FaEnvelope, FaWater, FaSignOutAlt, FaInfoCircle } from "react-icons/fa";
@@ -13,6 +15,7 @@ export default function Header() {
     const [open, setOpen] = useState(false);
     const { data: session } = useSession();
     const menuRef = useRef<HTMLDivElement | null>(null);
+    const [compact, setCompact] = useState(false);
 
     const handleLogout = async () => {
         await signOut({
@@ -20,6 +23,16 @@ export default function Header() {
             callbackUrl: "/",
         });
     };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setCompact(window.scrollY > 80);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -38,53 +51,77 @@ export default function Header() {
         };
     }, []);
     return (
-        <div className="grid sticky z-50 top-0 bg-white shadow-md items-center grid-cols-2 md:grid-cols-3 w-full gap-2 px-10 h-20">
+        <div className="flex justify-between  border-gray-200 z-50 top-0   items-center  w-full gap-2 px-10 h-20">
             <ProgressLink href="/">
-                <div className="h-8 md:h-9 lg:h-10 cursor-pointer">
+                <div className="h-8 md:h-10 lg:h-12 cursor-pointer ">
                     <img
-                        src="/images/logo2.jpg"
+                        src="/images/logo3.png"
                         alt="Logo"
                         className="h-full w-auto object-contain"
                     />
                 </div>
             </ProgressLink>
-            <div className="hidden text-xs bg-white lg:text-sm md:flex items-center justify-center py-2 px-6 border border-black/15 custom-primary rounded-xl shadow-md">
-
-                <div className="w-37 text-center truncate">
-                    <a href="" className="whitespace-nowrap ">
-                       What this is About
-                    </a>
+            <div
+                className={` hidden lg:flex items-center justify-center 
+              fixed  left-1/2 -translate-x-1/2 z-40 
+              bg-white/70 backdrop-blur-md border border-black/15 rounded-xl shadow-sm
+              transition-all duration-500 ease-in-out
+              ${compact ? "w-70 py-3 px-2 top-2" : "w-95 md:w-120 px-4 xl:w-170 py-2 xl:px-6 top-5"}`}
+            >
+                {/* ABOUT */}
+                <div className="flex-1 flex justify-center items-center gap-2 overflow-hidden">
+                    <FaInfoCircle className={`text-[#0F766E] text-lg ${compact ? "block" : "hidden"}`} />
+                    <span
+                        className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
+                            }`}
+                    >
+                        What this is About
+                    </span>
                 </div>
 
-                <div className="mx-4 h-5 w-px bg-black/20" />
+                <div className="mx-2 xl:mx-4 h-5 w-px bg-black/20" />
 
-                <div className="w-37 text-center truncate">
-                    <ProgressLink href="/lake-categories" className="whitespace-nowrap">
-                        Explore our Small Lakes
-                    </ProgressLink>
-                </div>
+                {/* LAKES */}
+                <ProgressLink
+                    href="/lake-categories"
+                    className="flex-1 flex justify-center items-center gap-2 overflow-hidden"
+                >
+                    <FaWater className={`text-[#0F766E] text-lg ${compact ? "block" : "hidden"}`} />
+                    <span
+                        className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
+                            }`}
+                    >
+                        Explore Small Lakes
+                    </span>
+                </ProgressLink>
 
-                <div className="mx-4 h-5 w-px bg-black/20 truncate" />
+                <div className="mx-2 xl:mx-4 h-5 w-px bg-black/20" />
 
-                <div className="w-37 text-center">
-                    <ProgressLink href="/community" className="whitespace-nowrap ">
-                        Engage in our Community
-                    </ProgressLink>
-                </div>
-
+                {/* COMMUNITY */}
+                <ProgressLink
+                    href="/community"
+                    className="flex-1 flex justify-center items-center gap-2 overflow-hidden"
+                >
+                    <RiUserCommunityFill className={`text-[#0F766E] text-lg ${compact ? "block" : "hidden"}`} />
+                    <span
+                        className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
+                            }`}
+                    >
+                        Engage in Community
+                    </span>
+                </ProgressLink>
             </div>
-
             <div className="flex justify-end items-center gap-2 ">
-                <div className="inline-flex cursor-pointer items-center justify-center rounded-full p-2 lg:p-3 bg-current custom-primary">
-                    <IoSearch className="text-white" />
+                <div className="inline-flex cursor-pointer items-center justify-center rounded-full p-2 lg:p-3 bg-[#EBF4F6] ">
+                    <IoSearch className="text-[#09637E]" />
                 </div>
                 <div className="relative" ref={menuRef}>
 
                     <div
                         onClick={() => setOpen(!open)}
-                        className="inline-flex items-center justify-center rounded-full p-2 lg:p-3 bg-current custom-primary cursor-pointer"
+                        className="inline-flex items-center justify-center rounded-full p-2 lg:p-3 bg-[#EBF4F6] cursor-pointer"
                     >
-                        <GiHamburgerMenu className="text-white" />
+                        <GiHamburgerMenu className="text-[#09637E]" />
                     </div>
 
                     {open && (
