@@ -45,7 +45,7 @@ export default function SmileySurvey() {
 
   return (
     <div className="flex flex-col items-center gap-4 p-6 mt-8 max-w-md mx-auto">
-      <h3 className="md:text-base text-black/40 text-center text-sm">
+      <h3 className="md:text-base text-black/40 dark:text-white/70 text-center text-sm">
         How satisfied are you with our site?
       </h3>
       <div className="flex gap-3">
@@ -54,7 +54,7 @@ export default function SmileySurvey() {
             key={score}
             onClick={() => handleVote(score)}
             className={`text-3xl transition-transform hover:scale-125 ${
-              selected === score ? 'scale-125 text-blue-600' : 'text-black/40'
+              selected === score ? 'scale-125 text-blue-600' : 'text-black/40 dark:text-white/70'
             }`}
           >
             {icons[i]}
