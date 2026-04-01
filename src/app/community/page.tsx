@@ -24,58 +24,75 @@ type WPComment = {
 export default function Community() {
   const [posts, setPosts] = useState<WPPost[]>([]);
   const [comments, setComments] = useState<Record<number, WPComment[]>>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [commentInputs, setCommentInputs] = useState<Record<number, string>>({});
   const { data: session } = useSession();
+  const [commentErrors, setCommentErrors] = useState<Record<number, string>>({});
+
   const [lakes, setLakes] = useState<any[]>([]);
-  const [selectedLake, setSelectedLake] = useState<string>("");
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | "">("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [tags, setTags] = useState<number[]>([]);
+  const [lake, setLake] = useState<number | null>(null);
+  const [postingComment, setPostingComment] = useState<number | null>(null);
+
+  const BASE_URL = process.env.NEXT_PUBLIC_WP_URL;
+
+  // ✅ Fetch posts + lakes + comments
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake`)
-      .then(res => res.json())
-      .then(data => setLakes(data))
-      .catch(err => console.error(err));
+    const fetchAll = async () => {
+      try {
+        setLoading(true);
+
+        const [postsRes,  categoriesRes, commentsRes] = await Promise.all([
+          fetch(`${BASE_URL}/wp-json/wp/v2/posts?_embed`),
+          fetch(`${BASE_URL}/wp-json/wp/v2/lake-category`), //should be on the orig posts category not acf theyre not the same
+          fetch(`${BASE_URL}/wp-json/wp/v2/comments?per_page=100&_fields=id,post,content,date,author_name`)
+        ]);
+
+        const postsData = await postsRes.json();
+        const commentsData = await commentsRes.json();
+        const categoriesData = await categoriesRes.json();
+
+        setPosts(postsData);
+        setCategories(categoriesData);
+
+        // ✅ Group comments
+        const grouped: Record<number, WPComment[]> = {};
+        commentsData.forEach((c: any) => {
+          if (!grouped[c.post]) grouped[c.post] = [];
+          grouped[c.post].push(c);
+        });
+
+        setComments(grouped);
+
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAll();
   }, []);
 
-  // Fetch posts
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/posts?_embed`)
-      .then(res => res.json())
-      .then(data => setPosts(data))
-      .catch(err => console.error(err));
-  }, []);
-
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake`)
-      .then(res => res.json())
-      .then(data => console.log(data));
-  }, []);
-
-  // Fetch comments for each post
-  useEffect(() => {
-    if (posts.length === 0) return;
-
-    posts.forEach(post => {
-      fetch(`${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/comments?post=${post.id}`)
-        .then(res => res.json())
-        .then(data => {
-          setComments(prev => ({
-            ...prev,
-            [post.id]: data
-          }));
-        })
-        .catch(err => console.error(err));
-    });
-  }, [posts]);
-
+  // ✅ Create Post
   const handleCreatePost = async () => {
-    console.log("Clicked");
+    if (!session?.accessToken) return alert("Login required");
 
-    if (!session?.accessToken) {
-      alert("No access token. Please login.");
+    if (!title.trim() || !content.trim()) {
+      alert("Title and content are required");
       return;
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/posts`, {
+      const res = await fetch(`${BASE_URL}/wp-json/wp/v2/posts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,13 +110,70 @@ export default function Community() {
       const data = await res.json();
 
       if (!res.ok) {
-        console.error("Error:", data);
+        console.error(data);
         return;
       }
 
-      console.log("Success:", data);
+      // ✅ Optimistic UI
+      setPosts(prev => [data, ...prev]);
+
+      // reset form
+      setTitle("");
+      setContent("");
+      setTags([]);
+      setLake(null);
+
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleCreateComment = async (postId: number) => {
+    if (!session?.accessToken) return alert("Login required");
+
+    const content = commentInputs[postId];
+    if (!content) return;
+
+    setPostingComment(postId);
+
+    // Clear previous error for this post
+    setCommentErrors(prev => ({ ...prev, [postId]: "" }));
+
+    try {
+      const res = await fetch(`${BASE_URL}/wp-json/wp/v2/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({ post: postId, content }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Use per-post error
+        setCommentErrors(prev => ({
+          ...prev,
+          [postId]: data?.message || "Something went wrong",
+        }));
+        return;
+      }
+
+      // Success: update comments and clear input
+      setComments(prev => ({
+        ...prev,
+        [postId]: [data, ...(prev[postId] || [])],
+      }));
+      setCommentInputs(prev => ({ ...prev, [postId]: "" }));
+
+    } catch (err: any) {
+      setCommentErrors(prev => ({
+        ...prev,
+        [postId]: err.message || "Something went wrong",
+      }));
+    } finally {
+      setPostingComment(null);
     }
   };
 
@@ -110,49 +184,107 @@ export default function Community() {
     }));
   };
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState<number[]>([]);
-  const [lake, setLake] = useState<number | null>(null);
+  // ✅ Loading + Error UI
+  if (loading) {
+    return (
+      <div className="max-w-3xl mx-auto p-6 space-y-6 animate-pulse">
+
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
+
+            {/* Title */}
+            <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
+
+            {/* Meta */}
+            <div className="h-3 w-1/3 bg-gray-100 rounded"></div>
+
+            {/* Content */}
+            <div className="space-y-2">
+              <div className="h-3 bg-gray-200 rounded"></div>
+              <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+              <div className="h-3 bg-gray-200 rounded w-4/6"></div>
+            </div>
+
+            {/* Comments */}
+            <div className="space-y-2 pt-3 border-t">
+              <div className="h-3 w-1/4 bg-gray-200 rounded"></div>
+              <div className="h-3 bg-gray-100 rounded w-3/4"></div>
+            </div>
+
+          </div>
+        ))}
+
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="max-w-md mx-auto mt-20 p-6 text-center bg-white border border-red-200 rounded-xl shadow-sm">
+
+        <div className="text-red-500 text-4xl mb-3">⚠️</div>
+
+        <h2 className="text-lg font-semibold text-gray-800">
+          Something went wrong
+        </h2>
+
+        <p className="text-sm text-gray-500 mt-1">
+          {error}
+        </p>
+
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition"
+        >
+          Try Again
+        </button>
+
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Community</h1>
+    <div className="max-w-3xl mx-auto px-4 py-10">
+
+      {/* Page Title */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+          Community
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Share experiences and discuss about lakes
+        </p>
+      </div>
 
       {/* Create Post */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm space-y-5">
+      <div className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 mb-8 shadow-sm space-y-5">
+
+        <h2 className="font-semibold text-gray-800">Create Post</h2>
 
         {/* Title */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-600">Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter post title..."
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-          />
-        </div>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Post title..."
+          className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+        />
 
         {/* Content */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-600">Content</label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Share something..."
-            rows={5}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-          />
-        </div>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Share something with the community..."
+          rows={4}
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+        />
 
-        {/* Tags */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-600">
-            Tags (comma separated IDs)
-          </label>
+        {/* Controls */}
+        <div className="grid grid-cols-2 gap-3">
+
+          {/* Tags */}
           <input
             type="text"
+            placeholder="Tags (1,2,3)"
             onChange={(e) => {
               const ids = e.target.value
                 .split(",")
@@ -160,35 +292,31 @@ export default function Community() {
                 .filter((id) => !isNaN(id));
               setTags(ids);
             }}
-            placeholder="e.g. 1,2,3"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
-        </div>
 
-        {/* Lake Select */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-600">Lake</label>
+          {/* Lake */}
           <select
-            value={lake ?? ""}
-            onChange={(e) => setLake(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(Number(e.target.value))}
+            className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
-            <option value="">Select a lake</option>
-            {lakes.map((lake) => (
-              <option key={lake.id} value={lake.id}>
-                {lake.name}
+            <option value="">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Actions */}
-        <div className="flex justify-end pt-2">
+        {/* Publish */}
+        <div className="flex justify-end">
           <button
             onClick={handleCreatePost}
-            className="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+            className="px-5 py-2.5 rounded-xl bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition"
           >
-            Publish Post
+            Publish
           </button>
         </div>
 
@@ -196,50 +324,78 @@ export default function Community() {
 
       {/* Posts */}
       <div className="space-y-6">
-        {posts.map(post => {
+
+        {posts.map((post) => {
+
           const author = post._embedded?.author?.[0]?.name || "Unknown";
           const postComments = comments[post.id] || [];
 
           return (
-            <div key={post.id} className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <div
+              key={post.id}
+              className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+            >
 
               {/* Post Header */}
-              <div className="mb-3">
-                <h2 className="font-semibold text-lg">{post.title.rendered}</h2>
-                <p className="text-xs text-gray-500">
-                  Posted by {author} • {new Date(post.date).toLocaleString()}
-                </p>
+              <div className="flex items-center gap-3 mb-4">
+
+                <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-600">
+                  {author.charAt(0)}
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">{author}</p>
+                  <p className="text-xs text-gray-400">
+                    {new Date(post.date).toLocaleString()}
+                  </p>
+                </div>
+
               </div>
 
-              {/* Post Content */}
+              {/* Title */}
+              <h2 className="font-semibold text-lg text-gray-900 mb-2">
+                {post.title.rendered}
+              </h2>
+
+              {/* Content */}
               <div
-                className="text-sm text-gray-700 mb-4"
+                className="text-sm text-gray-700 leading-relaxed mb-5"
                 dangerouslySetInnerHTML={{ __html: post.content.rendered }}
               />
 
               {/* Comments */}
-              <div className="border-t border-gray-100 pt-4 space-y-3">
-                <h3 className="text-sm font-semibold text-gray-600">
-                  Comments
-                </h3>
+              <div className="border-t pt-4 space-y-4 border-gray-200">
 
-                {postComments.map(comment => (
-                  <div key={comment.id} className="text-sm">
-                    <p className="font-medium text-gray-800">
-                      {comment.author_name}
-                    </p>
-                    <p
-                      className="text-gray-600"
-                      dangerouslySetInnerHTML={{ __html: comment.content.rendered }}
-                    />
-                    <p className="text-xs text-gray-400">
-                      {new Date(comment.date).toLocaleString()}
-                    </p>
+                {postComments.map((comment) => (
+                  <div key={comment.id} className="flex gap-3">
+
+                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold">
+                      {comment.author_name.charAt(0)}
+                    </div>
+
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-800">
+                        {comment.author_name}
+                      </p>
+
+                      <div
+                        className="text-sm text-gray-600"
+                        dangerouslySetInnerHTML={{
+                          __html: comment.content.rendered,
+                        }}
+                      />
+
+                      <p className="text-xs text-gray-400 mt-1">
+                        {new Date(comment.date).toLocaleString()}
+                      </p>
+                    </div>
+
                   </div>
                 ))}
 
                 {/* Comment Input */}
-                <div className="mt-3">
+                <div className="flex gap-2 pt-2">
+
                   <input
                     type="text"
                     value={commentInputs[post.id] || ""}
@@ -247,18 +403,31 @@ export default function Community() {
                       handleCommentChange(post.id, e.target.value)
                     }
                     placeholder="Write a comment..."
-                    className="w-full border border-gray-200 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
-                  <button className="mt-2 bg-gray-800 text-white px-3 py-1 rounded-md text-sm hover:bg-black">
-                    Comment
+
+                  <button
+                    disabled={postingComment === post.id}
+                    onClick={() => handleCreateComment(post.id)}
+                    className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black disabled:opacity-50"
+                  >
+                    {postingComment === post.id ? "Posting..." : "Send"}
                   </button>
+
                 </div>
+                {commentErrors[post.id] && (
+                  <p
+                    className="text-red-500 mt-2 text-sm"
+                    dangerouslySetInnerHTML={{ __html: commentErrors[post.id] }}
+                  />
+                )}
               </div>
 
             </div>
           );
         })}
       </div>
+
     </div>
   );
 }

@@ -1,11 +1,24 @@
 @import "tailwindcss";
-
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 :root {
-  --background: white;
-  --foreground: #171717;
+  --background: #ffffff;        /* Light background */
+  --foreground: #171717;        /* Dark text */
+  --primary-color: #09637e;     /* Custom primary */
+  --secondary-color: #7AB2B2;   /* Secondary accent */
+  --highlight-color: #0F766E;   /* Highlight / hover */
 }
 
+/* Dark mode variables */
+[data-theme="dark"] {
+  --background: #101828;        /* Dark gray-blue background */
+  --foreground: #E2E8F0;        /* Off-white text */
+  --primary-color: #4FD1C5;     /* Lighter teal for contrast */
+  --secondary-color: #2C7A7B;   /* Muted teal */
+  --highlight-color: #38B2AC;   /* Hover / focus accent */
+}
+
+/* Theme mapping */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

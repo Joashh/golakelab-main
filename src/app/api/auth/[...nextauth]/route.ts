@@ -16,18 +16,18 @@ export const authOptions: NextAuthOptions = {
         console.log("CREDENTIALS:", credentials);
 
         const res = await fetch(
-  `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/jwt-auth/v1/token`,
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: credentials?.username,
-      password: credentials?.password,
-    }),
-  }
-);
+          `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/jwt-auth/v1/token`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: credentials?.username,
+              password: credentials?.password,
+            }),
+          }
+        );
         const data = await res.json();
 
         console.log("WP RESPONSE:", data);
@@ -47,16 +47,18 @@ export const authOptions: NextAuthOptions = {
         token.email = user.user_email ?? undefined;
         token.accessToken = user.token;
         token.name = user.user_display_name;
+        token.role = user.role;
       }
       return token;
     },
 
     async session({ session, token }) {
-       if (session.user) {
-      session.user.email = token.email as string;
-      session.user.name = token.name as string;
-    }
-       session.accessToken = token.accessToken as string | undefined;
+      if (session.user) {
+        session.user.role = token.role;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+      }
+      session.accessToken = token.accessToken as string | undefined;
       return session;
     },
   },
