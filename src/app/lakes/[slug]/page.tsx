@@ -10,6 +10,10 @@ import { FiFileText, FiUnlock, FiShare2 } from 'react-icons/fi';
 import SmileySurvey from "@/app/component/smileysurvey";
 import RightModal from "@/app/component/rightmodal";
 import LakeActions from "@/app/component/lakeActions";
+import Overlay from "@/app/component/overlay";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import truncate from "html-truncate";
 
 type Params = {
   params: {
@@ -60,8 +64,8 @@ async function getLakeSections(lakeId: number) {
 
 export default async function Page({ params }: Params) {
   const { slug } = await params;
-
-
+  const session = await getServerSession(authOptions);
+  
 
   const lake = await getLakeBySlug(slug);
 
@@ -77,7 +81,26 @@ export default async function Page({ params }: Params) {
     return <div>Lake not found</div>;
   }
 
-  const lakeSections = await getLakeSections(lake.id);
+  let lakeSections = await getLakeSections(lake.id);
+
+
+  if (!session) {
+  lakeSections = lakeSections.slice(0, 10).map((section: any) => {
+
+    const fullHTML = section.content.rendered;
+
+    const preview = truncate(fullHTML, 800); 
+
+    return {
+      ...section,
+      content: {
+        ...section.content,
+        rendered:
+          preview ,
+      },
+    };
+  });
+}
 
   console.log(JSON.stringify(lakeSections, null, 2));
 
@@ -121,6 +144,9 @@ export default async function Page({ params }: Params) {
   const image =
     lake._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
     "/placeholder.jpg";
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 ">
@@ -171,7 +197,7 @@ export default async function Page({ params }: Params) {
 
               <ChevronRight className="w-4 h-4 mx-2 text-white/50" />
 
-              <span className="text-white font-medium truncate max-w-[200px] sm:max-w-none">
+              <span className="text-white font-medium truncate max-w-50 sm:max-w-none">
                 {lake.title.rendered}
               </span>
 
@@ -268,7 +294,7 @@ export default async function Page({ params }: Params) {
                   </h3>
 
                   {/* BUTTONS */}
-                  <LakeActions/>
+                  <LakeActions />
                 </div>
 
                 {/* LOCATION */}
@@ -301,7 +327,11 @@ export default async function Page({ params }: Params) {
           </div>
 
           {/* TABS */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white relative dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+
+            {tabs.length > 0 && <Overlay />}
+            {tabs.length === 0 && <h1 className="text-center text-gray-500">No data retrieved</h1>}
+
             {tabs.length > 0 && <Tabs grouped={grouped} tabs={tabs} />}
           </div>
 

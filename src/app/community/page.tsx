@@ -246,8 +246,15 @@ export default function Community() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
-
+    <div className="max-w-3xl mx-auto px-4 pb-10">
+      <div className="pb-10 pt-5">
+        <div className="dark:bg-orange-800 bg-orange-400 text-gray-900 dark:text-gray-200 px-6 py-3 rounded-xl shadow-lg border border-orange-400 dark:border-gray-700">
+          <h1 className="font-semibold text-lg text-white dark:text-gray-200">🚧 Under Maintenance</h1>
+          <p className="text-sm text-gray-100 dark:text-gray-200">
+            This section is currently under maintenance.
+          </p>
+        </div>
+      </div>
       {/* Page Title */}
       <div className="mb-8">
         <h1 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
@@ -331,112 +338,112 @@ export default function Community() {
       {/* Posts */}
       <div className="space-y-6">
 
-  {posts.map((post) => {
+        {posts.map((post) => {
 
-    const author = post._embedded?.author?.[0]?.name || "Unknown";
-    const postComments = comments[post.id] || [];
+          const author = post._embedded?.author?.[0]?.name || "Unknown";
+          const postComments = comments[post.id] || [];
 
-    return (
-      <div
-        key={post.id}
-        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-md dark:hover:shadow-lg transition"
-      >
+          return (
+            <div
+              key={post.id}
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-md dark:hover:shadow-lg transition"
+            >
 
-        {/* Post Header */}
-        <div className="flex items-center gap-3 mb-4">
+              {/* Post Header */}
+              <div className="flex items-center gap-3 mb-4">
 
-          <div className="h-9 w-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-semibold text-gray-600 dark:text-gray-200">
-            {author.charAt(0)}
-          </div>
+                <div className="h-9 w-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-semibold text-gray-600 dark:text-gray-200">
+                  {author.charAt(0)}
+                </div>
 
-          <div>
-            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-              {author}
-            </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              {new Date(post.date).toLocaleString()}
-            </p>
-          </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                    {author}
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    {new Date(post.date).toLocaleString()}
+                  </p>
+                </div>
 
-        </div>
-
-        {/* Title */}
-        <h2 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
-          {post.title.rendered}
-        </h2>
-
-        {/* Content */}
-        <div
-          className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-5"
-          dangerouslySetInnerHTML={{ __html: post.content.rendered }}
-        />
-
-        {/* Comments */}
-        <div className="border-t pt-4 space-y-4 border-gray-200 dark:border-gray-700">
-
-          {postComments.map((comment) => (
-            <div key={comment.id} className="flex gap-3">
-
-              <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-semibold text-gray-600 dark:text-gray-200">
-                {comment.author_name.charAt(0)}
               </div>
 
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                  {comment.author_name}
-                </p>
+              {/* Title */}
+              <h2 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
+                {post.title.rendered}
+              </h2>
 
-                <div
-                  className="text-sm text-gray-600 dark:text-gray-300"
-                  dangerouslySetInnerHTML={{
-                    __html: comment.content.rendered,
-                  }}
-                />
+              {/* Content */}
+              <div
+                className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-5"
+                dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+              />
 
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                  {new Date(comment.date).toLocaleString()}
-                </p>
+              {/* Comments */}
+              <div className="border-t pt-4 space-y-4 border-gray-200 dark:border-gray-700">
+
+                {postComments.map((comment) => (
+                  <div key={comment.id} className="flex gap-3">
+
+                    <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-semibold text-gray-600 dark:text-gray-200">
+                      {comment.author_name.charAt(0)}
+                    </div>
+
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                        {comment.author_name}
+                      </p>
+
+                      <div
+                        className="text-sm text-gray-600 dark:text-gray-300"
+                        dangerouslySetInnerHTML={{
+                          __html: comment.content.rendered,
+                        }}
+                      />
+
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        {new Date(comment.date).toLocaleString()}
+                      </p>
+                    </div>
+
+                  </div>
+                ))}
+
+                {/* Comment Input */}
+                <div className="flex gap-2 pt-2">
+
+                  <input
+                    type="text"
+                    value={commentInputs[post.id] || ""}
+                    onChange={(e) =>
+                      handleCommentChange(post.id, e.target.value)
+                    }
+                    placeholder="Write a comment..."
+                    className="flex-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+
+                  <button
+                    disabled={postingComment === post.id}
+                    onClick={() => handleCreateComment(post.id)}
+                    className="px-4 py-2 rounded-xl bg-gray-900 dark:bg-gray-700 text-white text-sm hover:bg-black dark:hover:bg-gray-600 disabled:opacity-50"
+                  >
+                    {postingComment === post.id ? "Posting..." : "Send"}
+                  </button>
+
+                </div>
+
+                {commentErrors[post.id] && (
+                  <p
+                    className="text-red-500 mt-2 text-sm"
+                    dangerouslySetInnerHTML={{ __html: commentErrors[post.id] }}
+                  />
+                )}
+
               </div>
 
             </div>
-          ))}
-
-          {/* Comment Input */}
-          <div className="flex gap-2 pt-2">
-
-            <input
-              type="text"
-              value={commentInputs[post.id] || ""}
-              onChange={(e) =>
-                handleCommentChange(post.id, e.target.value)
-              }
-              placeholder="Write a comment..."
-              className="flex-1 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-
-            <button
-              disabled={postingComment === post.id}
-              onClick={() => handleCreateComment(post.id)}
-              className="px-4 py-2 rounded-xl bg-gray-900 dark:bg-gray-700 text-white text-sm hover:bg-black dark:hover:bg-gray-600 disabled:opacity-50"
-            >
-              {postingComment === post.id ? "Posting..." : "Send"}
-            </button>
-
-          </div>
-
-          {commentErrors[post.id] && (
-            <p
-              className="text-red-500 mt-2 text-sm"
-              dangerouslySetInnerHTML={{ __html: commentErrors[post.id] }}
-            />
-          )}
-
-        </div>
-
+          );
+        })}
       </div>
-    );
-  })}
-</div>
 
     </div>
   );

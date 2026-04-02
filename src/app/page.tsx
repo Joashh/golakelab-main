@@ -3,6 +3,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Search, Menu } from "lucide-react";
 import HeroClient from "./component/HeroClient";
+import LakeSearch from "./component/search";
 
 export default function Home() {
 
@@ -25,26 +26,14 @@ export default function Home() {
 
 
 
-        <p className="max-w-3xl mb-10 text-sm md:text-base leading-relaxed dark:text-white/50">
+        <p className="max-w-3xl mb-10 text-xs md:text-base leading-relaxed dark:text-white/50">
           Welcome to the knowledge sharing portal website — a centralized hub dedicated to advancing research, policy, and collaboration for sustainable lake management.
         </p>
 
 
-        <div
-          className="w-full max-w-lg flex rounded-2xl overflow-hidden shadow-sm border backdrop-blur-sm"
-          style={{  backgroundColor: 'var(--background)' }}
-        >
-          <input
-            type="text"
-            placeholder="Search lakes, locations, or topics..."
-            className="w-full px-5 py-3 outline-none text-sm text-[#09637e] dark:text-white"
-          />
-          <button
-            className="px-6  font-medium hover:opacity-90 transition bg-[#09637e] dark:bg-white dark:text-[#09637e] text-white cursor-pointer "
-          >
-            Search
-          </button>
-        </div>
+        <LakeSearch />
+
+
 
       </section>
 

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { FaSignInAlt } from "react-icons/fa";
 import { Info, MapPin, Users } from "lucide-react";
 import Link from "next/link";
+import { FaNewspaper } from "react-icons/fa6";
 import { FaMap, FaUsers } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RiUserCommunityFill } from "react-icons/ri";
@@ -11,6 +12,7 @@ import { FaUser, FaCog, FaEnvelope, FaWater, FaSignOutAlt, FaInfoCircle } from "
 import ProgressLink from "./progresslink";
 import { signOut, useSession } from "next-auth/react";
 import ThemeChanger from "./themechanger";
+import HeaderSearch from "./headersearch";
 
 
 export default function Header() {
@@ -75,9 +77,9 @@ export default function Header() {
             <div
                 className={` hidden lg:flex items-center justify-center 
               fixed  left-1/2 -translate-x-1/2 z-40 
-              bg-white/70 dark:bg-gray-800 backdrop-blur-md border border-black/15 dark:border-gray-800 rounded-xl shadow-sm
+               backdrop-blur-md border border-black/15 dark:border-gray-800 rounded-xl shadow-sm
               transition-all duration-500 ease-in-out
-              ${compact ? "w-70 py-3 px-2 top-2" : "w-95 md:w-120 px-4 xl:w-170 py-2 xl:px-6 top-5"}`}
+              ${compact ? "w-70 py-3 px-2 top-2 bg-white/70 dark:bg-gray-700/50" : "w-95 md:w-120 px-4 xl:w-170 py-2 xl:px-6 top-5 bg-white/70 dark:bg-gray-800"}`}
             >
                 {/* ABOUT */}
                 <ProgressLink href="/about" className="flex-1 flex justify-center cursor-pointer items-center gap-2 overflow-hidden">
@@ -123,9 +125,8 @@ export default function Header() {
                 </ProgressLink>
             </div>
             <div className="flex justify-end items-center gap-2 ">
-                <div className="inline-flex cursor-pointer items-center justify-center rounded-full p-2 lg:p-3 bg-[#EBF4F6] dark:bg-gray-800 dark:shadow-md dark:border dark:border-gray-800">
-                    <IoSearch className="text-[#09637E] dark:text-white" />
-                </div>
+                <HeaderSearch />
+
                 <div className="relative" ref={menuRef}>
 
                     <div
@@ -136,7 +137,7 @@ export default function Header() {
                     </div>
 
                     <div
-                        className={`absolute text-black/60 right-0 mt-3 w-48 bg-white dark:bg-gray-800 dark:border-gray-800 dark:text-white border border-black/10 p-3 rounded-xl shadow-lg overflow-hidden z-50
+                        className={`absolute text-black/60 right-0 mt-3 w-58 bg-white dark:bg-gray-800/70 backdrop-blur-md dark:border-gray-800 dark:text-white border border-black/10 p-2 rounded-xl shadow-lg overflow-hidden z-50
     transition-all duration-300 ease-in-out
     ${open ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}
   `}
@@ -144,7 +145,7 @@ export default function Header() {
                         <div className="pb-3">
                             <ThemeChanger />
                         </div>
-                        
+
 
                         {!session ? null : (
                             <ProgressLink
@@ -161,7 +162,16 @@ export default function Header() {
                             </ProgressLink>
                         )}
 
-                        
+                        <ProgressLink
+                            href="/community"
+                            className="flex  items-center gap-2 px-4 py-2 text-sm hover:bg-black/5 transition"
+                        >
+                            <FaNewspaper className="text-[#09637e] dark:text-white" />
+                            News and Updates
+                        </ProgressLink>
+
+
+
                         {isAdmin && (
                             <ProgressLink
                                 href="https://golakelab.dev.uplb.edu.ph/wp-admin"
@@ -215,9 +225,9 @@ export default function Header() {
                         </a>
 
                         {!session ? (
-                            <ProgressLink
-                                className="flex cursor-pointer items-center gap-2 w-full text-left px-4 py-2 text-sm text-[#0F766E]  hover:bg-black/5 transition"
-                                href="/login"
+                            <ProgressLink href="/login"
+                                className="flex cursor-pointer items-center gap-2 w-full text-left px-4 py-2 text-sm text-[#0F766E] dark:text-green-400 hover:bg-black/5 transition"
+
                             >
                                 <FaSignInAlt /> Login
                             </ProgressLink>

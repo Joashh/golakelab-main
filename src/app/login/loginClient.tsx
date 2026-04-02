@@ -39,10 +39,10 @@ export default function LoginClient() {
     };
 
     return (
-        <div className="flex items-center justify-center bg-white py-20" >
+        <div className="flex items-center justify-center bg-white dark:bg-gray-900 py-20" >
 
             {/* CENTER CARD */}
-            <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+            <div className="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
 
                 {/* LEFT - CAROUSEL */}
                 <div className="hidden md:block relative">
@@ -84,7 +84,7 @@ export default function LoginClient() {
                 <div className="flex items-center justify-center p-6 sm:p-10">
                     <div className="w-full max-w-sm">
 
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 text-center">
                             Sign In
                         </h2>
                         <p className="text-sm text-gray-500 text-center mb-6">
@@ -97,7 +97,7 @@ export default function LoginClient() {
                                 <label className="block text-sm text-gray-600 mb-1">
                                     Username
                                 </label>
-                                <input value={username} className="p-2 border-gray-200 shadow border rounded-md w-full px-3"
+                                <input value={username} className="p-2 border-gray-200 bg-white dark:bg-gray-900 shadow border rounded-md w-full px-3"
                                     placeholder="Username"
                                     onChange={(e) => setUsername(e.target.value)}
                                 />
