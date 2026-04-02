@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import LoginClient from "./loginClient";
+import LoginClient from "../component/loginClient";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function LoginPage() {
@@ -10,5 +10,5 @@ export default async function LoginPage() {
     redirect("/"); // prevents logged-in users from seeing login
   }
 
-  return <LoginClient />;
+  return null;
 }

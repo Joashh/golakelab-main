@@ -10,7 +10,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen flex flex-col transition ease-in-out justify-center pb-40 w-full bg-[#ebf4f6] dark:bg-transparent">
+      className="min-h-screen flex flex-col  transition ease-in-out justify-center pb-40 w-full bg-[#ebf4f6] dark:bg-transparent">
 
 
       <section className="min-h-[70vh] flex flex-col justify-center items-center text-center px-6 w-full">

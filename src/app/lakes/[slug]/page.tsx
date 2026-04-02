@@ -208,7 +208,7 @@ export default async function Page({ params }: Params) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto -mt-10 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 bg-white dark:bg-gray-800 rounded-2xl shadow p-5 border border-gray-100 dark:border-gray-700">
+      <div className="max-w-7xl  mx-auto -mt-10 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 bg-white dark:bg-gray-800 rounded-2xl shadow p-5 border border-gray-100 dark:border-gray-700">
 
         {distance && (
           <div className="flex flex-col items-center justify-center gap-2 md:border-r md:border-gray-200 dark:md:border-gray-600 md:pr-6">

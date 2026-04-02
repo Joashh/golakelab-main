@@ -13,9 +13,11 @@ import ProgressLink from "./progresslink";
 import { signOut, useSession } from "next-auth/react";
 import ThemeChanger from "./themechanger";
 import HeaderSearch from "./headersearch";
-
+import Modal from "./loginmodal";
+import LoginModalContent from "./loginClient";
 
 export default function Header() {
+    const [isOpen, setIsOpen] = useState(false);
     const [open, setOpen] = useState(false);
     const { data: session } = useSession();
     const menuRef = useRef<HTMLDivElement | null>(null);
@@ -187,14 +189,14 @@ export default function Header() {
 
                         <ProgressLink
                             href="/lake-categories"
-                            className="flex md:hidden items-center gap-2 px-4 py-2 text-sm hover:bg-black/5 transition"
+                            className="flex lg:hidden items-center gap-2 px-4 py-2 text-sm hover:bg-black/5 transition"
                         >
                             <FaWater className="text-[#09637e] dark:text-white" />
                             Lake Categories
                         </ProgressLink>
                         <ProgressLink
                             href="/community"
-                            className="flex md:hidden items-center gap-2 px-4 py-2 text-sm hover:bg-black/5 transition"
+                            className="flex lg:hidden items-center gap-2 px-4 py-2 text-sm hover:bg-black/5 transition"
                         >
                             <RiUserCommunityFill className="text-[#09637e] dark:text-white" />
                             Community
@@ -218,19 +220,20 @@ export default function Header() {
 
                         <a
                             href="#"
-                            className="flex md:hidden items-center gap-2 px-4 py-2 text-sm hover:bg-black/5 transition"
+                            className="flex lg:hidden items-center gap-2 px-4 py-2 text-sm hover:bg-black/5 transition"
                         >
                             <FaInfoCircle className="text-[#09637e] dark:text-white" />
                             About
                         </a>
 
                         {!session ? (
-                            <ProgressLink href="/login"
-                                className="flex cursor-pointer items-center gap-2 w-full text-left px-4 py-2 text-sm text-[#0F766E] dark:text-green-400 hover:bg-black/5 transition"
-
+                            <button
+                                onClick={() => setIsOpen(true)}
+                                className="flex cursor-pointer items-center gap-2 w-full text-left px-4 py-2 text-sm text-green-700 dark:text-[#19b5e4] hover:bg-black/5 transition"
                             >
-                                <FaSignInAlt /> Login
-                            </ProgressLink>
+                                <FaSignInAlt/>
+                                Login
+                            </button>
                         ) : (
                             <button
                                 onClick={handleLogout}
@@ -244,7 +247,9 @@ export default function Header() {
 
                 </div>
 
-
+                <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                    <LoginModalContent onClose={() => setIsOpen(false)} />
+                </Modal>
 
             </div>
 
