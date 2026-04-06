@@ -146,7 +146,7 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
                         >
                             {loading ? "Signing in..." : "Sign In"}
                         </button>
-                        <button onClick={() => signIn("google")}
+                        <button onClick={() => signIn("google",  { callbackUrl: "/" })}
                             type="button"
 
                             className="w-full cursor-pointer flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 text-xs py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm"
