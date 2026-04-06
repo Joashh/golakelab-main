@@ -7,7 +7,7 @@ export default function About() {
     <section className="py-16 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-6xl mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 text-center mb-6">
-          About the Go LAKE Lab
+          About the GoLAKE Lab
         </h2>
         <p className="text-center text-gray-600 dark:text-gray-300 mb-12 md:max-w-4xl mx-auto leading-relaxed">
           The <span className="font-semibold text-blue-600 dark:text-blue-400">

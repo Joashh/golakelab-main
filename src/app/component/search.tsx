@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { FaDotCircle } from "react-icons/fa";
 import { IoMdWater } from "react-icons/io";
+import Link from 'next/link';
+import { FaNewspaper } from 'react-icons/fa';
 
 export default function LakeSearch() {
 
@@ -22,11 +24,25 @@ export default function LakeSearch() {
         if (!query) return;
         setLoading(true);
 
-        const res = await fetch(
+        // Fetch lakes
+        const lakeRes = await fetch(
             `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake?search=${encodeURIComponent(query)}&_embed`
         );
-        const data = await res.json();
-        setResults(data);
+        const lakes = await lakeRes.json();
+
+        // Fetch news
+        const newsRes = await fetch(
+            `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/news?search=${encodeURIComponent(query)}&_embed`
+        );
+        const news = await newsRes.json();
+
+        // Merge results with a type field
+        const merged = [
+            ...lakes.map((item: any) => ({ ...item, type: 'lake' })),
+            ...news.map((item: any) => ({ ...item, type: 'news' })),
+        ];
+
+        setResults(merged);
         setLoading(false);
     };
 
@@ -58,26 +74,40 @@ export default function LakeSearch() {
             {/* Results dropdown */}
             {query && results.length > 0 && (
                 <div className="absolute z-50 w-full mt-2 p-3 rounded-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-lg border border-gray-200 dark:border-gray-700">
-                    <ul className="divide-y divide-gray-200 dark:divide-gray-700 max-h-80 overflow-y-auto">
-                        {results.map((lake) => (
-                            <li
-                                key={lake.id}
-                                className="flex items-center justify-between gap-3 py-3 px-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg cursor-pointer"
-                                onClick={() => (window.location.href = `/lakes/${lake.slug}`)}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <IoMdWater className="text-[#1092ba] dark:text-[#4fd1c5] text-lg" />
-                                    <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                                        {lake.title.rendered}
-                                    </h3>
-                                </div>
-                                {lake.acf?.barangay?.value && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        {lake.acf.barangay.value}
+                    <ul className="divide-y divide-gray-200 dark:divide-gray-700 max-h-80 overflow-y-auto scrollbar-theme">                      
+                          {results.map((item) => (
+                        <li
+                            key={`${item.type}-${item.id}`}
+                            className="flex  items-center gap-3 py-3 px-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg cursor-pointer"
+                        >
+                            {item.type === 'lake' && <IoMdWater className="text-[#1092ba] dark:text-[#4fd1c5] text-lg" />}
+                            {item.type === 'news' && <FaNewspaper className="text-[#1092ba] dark:text-[#4fd1c5] text-lg" />}
+
+                            <div className="flex-1 flex justify-between items-center">
+                                <div className="flex flex-col items-start">
+                                    <Link href={`/${item.type === 'lake' ? 'lakes' : 'news'}/${item.slug}`}>
+                                        <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200  truncate mx-auto ">
+                                            {item.title.rendered}
+                                        </h3>
+                                    </Link>
+                                    <p className="text-xs text-gray-400 italic mt-1">
+                                        {item.type === 'lake' ? 'Lake' : 'News'}
                                     </p>
-                                )}
-                            </li>
-                        ))}
+                                </div>
+
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {item.date
+                                        ? new Date(item.date).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                        })
+                                        : ''}
+                                </p>
+
+                            </div>
+                        </li>
+                    ))}
                     </ul>
                 </div>
             )}

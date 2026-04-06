@@ -165,7 +165,7 @@ export default function Header() {
                         )}
 
                         <ProgressLink
-                            href="/community"
+                            href="/news"
                             className="flex  items-center gap-2 px-4 py-2 text-sm hover:bg-black/5 transition"
                         >
                             <FaNewspaper className="text-[#09637e] dark:text-white" />

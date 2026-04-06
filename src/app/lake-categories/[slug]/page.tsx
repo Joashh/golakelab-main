@@ -7,6 +7,7 @@ import { FaRulerHorizontal } from "react-icons/fa";
 import { ChevronRight } from "lucide-react";
 import LakeGrid from "@/app/component/wrappercard";
 import SmileySurvey from "@/app/component/smileysurvey";
+import RelatedNews from "@/app/component/relatednews";
 
 
 
@@ -269,6 +270,8 @@ export default async function Page({ params }: Params) {
                 </div>
 
             </div>
+
+            <RelatedNews categoryId={category.id} />
 
             <div className="mt-10 p-6 rounded-2xl bg-gray-50 dark:bg-gray-800 border dark:border-gray-800 border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white text-center mb-6">

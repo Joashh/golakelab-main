@@ -8,6 +8,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { RxCross2 } from "react-icons/rx";
 
+
 import { IoArrowBackOutline } from "react-icons/io5";
 
 
@@ -86,13 +87,7 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
                                 <p className="text-xs opacity-80">Train planners, policymakers, LGUs, and researchers to conduct lake studies and utilize decision support systems (DSS).</p>
                             </div>
                         </div>
-                        <div className="bg-black/50 rounded-xl text-white  p-4 flex items-center gap-3  ">
-                            <FiBarChart2 className="text-orange-400 text-2xl w-1/3" />
-                            <div>
-                                <h3 className="text-sm font-semibold">Evidence-Based Policy</h3>
-                                <p className="text-xs opacity-80">Collaborate with experts and laboratories to support adaptive management and informed decision-making.</p>
-                            </div>
-                        </div>
+                       
                     </div>
                 </div>
             </div>
@@ -102,20 +97,7 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
 
                 <div className="w-full max-w-sm">
 
-                    <div className="w-full h-auto bg-white border border-gray-200 dark:border-gray-800  dark:bg-gray-800   rounded-lg shadow-md  flex justify-center p-4  ">
-                        {/* Light mode logo */}
-                        <img
-                            src="/images/logo3.png"
-                            alt="Logo"
-                            className="h-full w-auto object-contain block dark:hidden"
-                        />
-                        {/* Dark mode logo */}
-                        <img
-                            src="/images/logo-black.png"
-                            alt="Logo Dark"
-                            className="h-full w-auto object-contain hidden dark:block"
-                        />
-                    </div>
+                    
 
                     <div className="text-gray-700 text-center py-6 dark:text-gray-400">
                         <h2 className="text-2xl pb-3 font-bold text-gray-800 dark:text-white  text-center">
@@ -164,7 +146,7 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
                         >
                             {loading ? "Signing in..." : "Sign In"}
                         </button>
-                        <button
+                        <button onClick={() => signIn("google")}
                             type="button"
 
                             className="w-full cursor-pointer flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 text-xs py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm"

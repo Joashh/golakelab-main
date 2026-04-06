@@ -55,3 +55,28 @@ body {
 #nprogress .peg {
   box-shadow: 0 0 10px #0F766E, 0 0 5px #0F766E;
 }
+
+.scrollbar-theme::-webkit-scrollbar {
+  width: 8px;
+  background: transparent; /* Light mode track is invisible */
+}
+
+.scrollbar-theme::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); /* Light mode thumb */
+  border-radius: 9999px;
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-theme::-webkit-scrollbar-thumb {
+  background-color: #1092ba; /* Blue thumb in dark mode */
+}
+
+.scrollbar-theme {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(0,0,0,0.3) transparent; /* Light mode Firefox */
+}
+
+/* Dark mode Firefox */
+.dark .scrollbar-theme {
+  scrollbar-color: #1092ba transparent; /* Dark mode Firefox */
+}

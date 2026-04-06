@@ -14,7 +14,7 @@ export default function Footer() {
                         className="font-bold text-xl mb-3 text-[#09637e] dark:text-white"
                         
                     >
-                        Small Lake Governance
+                        GoLake Lab
                     </h1>
 
                     <p className="text-sm opacity-70 max-w-sm">
@@ -48,9 +48,9 @@ export default function Footer() {
                     <div>
                         <h2 className="font-semibold mb-3  text-[#09637e] dark:text-white">Features</h2>
                         <div className="flex flex-col gap-2 text-sm opacity-70 dark:text-white/70">
-                            <a href="#" className="hover:opacity-100 transition">Lake Categories</a>
-                            <a href="#" className="hover:opacity-100 transition">Community</a>
-                            <a href="#" className="hover:opacity-100 transition">About</a>
+                            <a href="/lake-categories" className="hover:opacity-100 transition">Lake Categories</a>
+                            <a href="/community" className="hover:opacity-100 transition">Community</a>
+                            <a href="/about" className="hover:opacity-100 transition">About</a>
                         </div>
                     </div>
 

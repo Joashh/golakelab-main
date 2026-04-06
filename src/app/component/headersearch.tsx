@@ -1,8 +1,9 @@
 'use client';
 import { useState, useRef, useEffect } from "react";
 import { IoSearch } from "react-icons/io5";
-import { FaDotCircle } from "react-icons/fa";
+import { FaDotCircle, FaNewspaper } from "react-icons/fa";
 import { IoMdWater } from "react-icons/io";
+import Link from "next/link";
 
 export default function HeaderSearch() {
   const [open, setOpen] = useState(false);
@@ -26,16 +27,26 @@ export default function HeaderSearch() {
   const handleSearch = async () => {
     if (!query) return;
     setLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake?search=${encodeURIComponent(query)}&_embed`
-      );
-      const data = await res.json();
-      setResults(data);
-    } catch (err) {
-      console.error(err);
-      setResults([]);
-    }
+
+    // Fetch lakes
+    const lakeRes = await fetch(
+      `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake?search=${encodeURIComponent(query)}&_embed`
+    );
+    const lakes = await lakeRes.json();
+
+    // Fetch news
+    const newsRes = await fetch(
+      `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/news?search=${encodeURIComponent(query)}&_embed`
+    );
+    const news = await newsRes.json();
+
+    // Merge results with a type field
+    const merged = [
+      ...lakes.map((item: any) => ({ ...item, type: 'lake' })),
+      ...news.map((item: any) => ({ ...item, type: 'news' })),
+    ];
+
+    setResults(merged);
     setLoading(false);
   };
 
@@ -62,9 +73,8 @@ export default function HeaderSearch() {
 
       {/* Expanding Input */}
       <div
-        className={`relative transition-all duration-300 ${
-          open ? "w-40 xl:w-60 4xl:w-96 ml-2 opacity-100" : "w-0 opacity-0 ml-0"
-        }`}
+        className={`relative transition-all duration-300 ${open ? "w-40 xl:w-60 4xl:w-96 ml-2 opacity-100" : "w-0 opacity-0 ml-0"
+          }`}
       >
         {open && (
           <div className="flex relative">
@@ -77,30 +87,50 @@ export default function HeaderSearch() {
             />
 
             {/* Results Dropdown */}
-            {query && (
-              <div className="absolute top-full right-0  w-66 md:w-66 xl:w-100 mt-2 p-2 rounded-xl bg-white/80 dark:bg-gray-900/75 backdrop-blur-md shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto">
+            {query && results.length > 0 && (
+              <div className="absolute  overflow-y-auto scrollbar-theme top-full right-0  w-66 md:w-66 xl:w-100 mt-2 p-2 rounded-xl bg-white/80 dark:bg-gray-900/75 backdrop-blur-md shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto">
                 {loading && <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>}
                 {!loading && results.length === 0 && (
                   <p className="text-sm text-gray-500 dark:text-gray-400">No results found</p>
                 )}
-                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {results.map((lake) => (
+                <ul className="divide-y divide-gray-200 dark:divide-gray-700 overflow-y-auto scrollbar-theme">
+                  {results.map((item) => (
                     <li
-                      key={lake.id}
-                      className="flex items-center justify-between gap-3 py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg cursor-pointer"
-                      onClick={() => window.location.href = `/lakes/${lake.slug}`}
+                      key={`${item.type}-${item.id}`}
+                      className="flex items-center gap-3 py-3 px-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg cursor-pointer"
                     >
-                      <div className="flex items-center gap-2">
-                        <IoMdWater className="text-[#1092ba] dark:text-[#4fd1c5] text-sm" />
-                        <h3 className="text-xs md:text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                          {lake.title.rendered}
-                        </h3>
+                      {/* Left: Icon + Title/Type */}
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {/* Icon */}
+                        {item.type === 'lake' && <IoMdWater className="text-[#1092ba] dark:text-[#4fd1c5] text-lg shrink-0" />}
+                        {item.type === 'news' && <FaNewspaper className="text-[#1092ba] dark:text-[#4fd1c5] text-lg shrink-0" />}
+
+                        {/* Title + Type */}
+                        <div className="flex flex-col min-w-0">
+                          <Link href={`/${item.type === 'lake' ? 'lakes' : 'news'}/${item.slug}`}>
+                            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">
+                              {item.title.rendered}
+                            </h3>
+                          </Link>
+                          <p className="text-xs text-gray-400 truncate">
+                            {item.type === 'lake' ? 'Lake' : 'News'}
+                          </p>
+                        </div>
                       </div>
-                      {lake.acf?.barangay?.value && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {lake.acf.barangay.value}
-                        </p>
-                      )}
+
+                      {/* Right info: barangay or date */}
+                      <div className="text-xs text-gray-500 dark:text-gray-400 shrink-0 ml-2">
+                        {item.type === 'lake'
+                          ? item.acf?.barangay?.value
+                          : item.date
+                            ? new Date(item.date).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })
+                            : null
+                        }
+                      </div>
                     </li>
                   ))}
                 </ul>

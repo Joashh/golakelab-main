@@ -17,7 +17,7 @@ export default function Home() {
 
 
         <div className="mb-4 px-4 py-1 rounded-full text-xs font-medium border text-[#09637e] dark:text-white ">
-          Knowledge Portal for Lake Research
+          Knowledge Sharing Portal
         </div>
 
 

@@ -1,7 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import ProgressLink from "../component/progresslink";
-import SmileySurvey from "../component/smileysurvey";
+import ProgressLink from "@/app/component/progresslink";
+import SmileySurvey from "@/app/component/smileysurvey";
 
 type Category = {
   id: number;
