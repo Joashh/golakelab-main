@@ -9,6 +9,7 @@ interface Props {
   setModalType: (type: "login" | "register" | null) => void;
 }
 
+
 export default function AuthModals({ modalType, setModalType }: Props) {
   return (
     <Modal isOpen={modalType !== null} onClose={() => setModalType(null)}>
