@@ -14,7 +14,7 @@ export default function Footer() {
                         className="font-bold text-xl mb-3 text-[#09637e] dark:text-white"
                         
                     >
-                        GoLake Lab
+                        GoLAKE Lab
                     </h1>
 
                     <p className="text-sm opacity-70 max-w-sm">

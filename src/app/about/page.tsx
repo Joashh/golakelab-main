@@ -10,8 +10,8 @@ export default function About() {
           About the GoLAKE Lab
         </h2>
         <p className="text-center text-gray-600 dark:text-gray-300 mb-12 md:max-w-4xl mx-auto leading-relaxed">
-          The <span className="font-semibold text-blue-600 dark:text-blue-400">
-            Governance Leadership, Advocacy for Knowledge Enhancement Laboratory (Go LAKE Lab)
+          The <span className="font-semibold text-[#09637e] dark:text-[#13aad8]">
+            Governance Leadership, Advocacy for Knowledge Enhancement Laboratory (GoLAKE Lab)
           </span> 
           is transforming small lake management by creating a dedicated platform within UPLB. 
           We empower stakeholders with the skills, tools, and data to support evidence-based governance 
