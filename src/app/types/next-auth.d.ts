@@ -1,27 +1,30 @@
 import NextAuth from "next-auth";
+import { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface Session {
-    accessToken?: string;
-    user: {
-       role?: string;
-      name?: string | null;
-      email?: string | null;
-       provider?: string;
-    };
-  }
+  accessToken?: string;
+  user: {
+    role?: string;
+    name?: string | null;
+    email?: string | null;
+    provider?: string;
+  } & DefaultSession["user"];
+}
 
   interface User {
-     role?: string;
+    role?: string;
     token?: string;
     user_display_name?: string;
     user_email?: string | null;
+    wordpressId?: number;
+    wordpressName?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-     role?: string;
+    role?: string;
     accessToken?: string;
     name?: string;
     email?: string;

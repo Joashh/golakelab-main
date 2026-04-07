@@ -12,7 +12,8 @@ import { RxCross2 } from "react-icons/rx";
 import { IoArrowBackOutline } from "react-icons/io5";
 
 
-export default function LoginModalContent({ onClose }: { onClose: () => void }) {
+export default function LoginModalContent({onClose, openRegister}: {onClose: () => void;openRegister: () => void;}) 
+{
     const images = ["/images/7.jpg", "/images/8.png", "/images/9.png"];
     const [current, setCurrent] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
@@ -20,6 +21,8 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
+    
+    
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -48,7 +51,7 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 relative">
-            <div className="absolute top-5 left-5 z-50 text-white/70 cursor-pointer" onClick={onClose}><IoArrowBackOutline className="h-7 w-7" /> </div>
+            <div className="absolute top-5 left-5 z-40 text-white/70 cursor-pointer" onClick={onClose}><IoArrowBackOutline className="h-7 w-7" /> </div>
             {/* LEFT - Carousel (optional) */}
             <div className="hidden md:block relative shadow-md">
                 {images.map((img, index) => (
@@ -62,8 +65,8 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
 
                     <div className="flex flex-col gap-2 text-white ">
                         <h1 className="font-extrabold text-4xl">
-                        About Us
-                    </h1>
+                            About Us
+                        </h1>
                         <h1 className="text-xs text-justify">
                             The Governance Leadership, Advocacy for Knowledge Enhancement Laboratory (Go LAKE Lab)is transforming small lake management by creating a dedicated platform within UPLB.
                         </h1>
@@ -87,7 +90,7 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
                                 <p className="text-xs opacity-80">Train planners, policymakers, LGUs, and researchers to conduct lake studies and utilize decision support systems (DSS).</p>
                             </div>
                         </div>
-                       
+
                     </div>
                 </div>
             </div>
@@ -97,7 +100,7 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
 
                 <div className="w-full max-w-sm">
 
-                    
+
 
                     <div className="text-gray-700 text-center py-6 dark:text-gray-400">
                         <h2 className="text-2xl pb-3 font-bold text-gray-800 dark:text-white  text-center">
@@ -146,7 +149,7 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
                         >
                             {loading ? "Signing in..." : "Sign In"}
                         </button>
-                        <button onClick={() => signIn("google",  { callbackUrl: "/" })}
+                        <button onClick={() => signIn("google", { callbackUrl: "/" })}
                             type="button"
 
                             className="w-full cursor-pointer flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 text-xs py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm"
@@ -156,12 +159,16 @@ export default function LoginModalContent({ onClose }: { onClose: () => void }) 
                                 alt="Google"
                                 className="w-4 h-4"
                             />
-                            Continue with Google
+                            Login with Google (Maintenance)
                         </button>
                     </form>
                     <p className="text-xs text-center text-gray-500 mt-6">
                         Don’t have an account?{" "}
-                        <a href="#" className="text-teal-600 hover:underline">Sign up</a>
+
+                        <button onClick={openRegister}
+                            className="text-teal-600 hover:underline">
+                            Sign up
+                        </button>
                     </p>
 
                 </div>

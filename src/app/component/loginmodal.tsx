@@ -16,7 +16,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
             onClick={onClose}
         >
             <div
-                className="bg-white m-4 dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden max-w-3xl w-full"
+                className="bg-white m-4 dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden max-w-3xl"
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
             >
                 {children}

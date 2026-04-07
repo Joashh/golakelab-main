@@ -1,7 +1,7 @@
 'use client'
 import { IoSearch } from "react-icons/io5";
 import { useState, useRef, useEffect } from "react";
-import { FaSignInAlt } from "react-icons/fa";
+import { FaAngleDoubleUp, FaSignInAlt } from "react-icons/fa";
 import { Info, MapPin, Users } from "lucide-react";
 import Link from "next/link";
 import { FaNewspaper } from "react-icons/fa6";
@@ -15,6 +15,7 @@ import ThemeChanger from "./themechanger";
 import HeaderSearch from "./headersearch";
 import Modal from "./loginmodal";
 import LoginModalContent from "./loginClient";
+import AuthModals from "./authmodals";
 
 export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function Header() {
     const { data: session } = useSession();
     const menuRef = useRef<HTMLDivElement | null>(null);
     const [compact, setCompact] = useState(false);
+    const [modalType, setModalType] = useState<"login" | "register" | null>(null);
 
     const isAdmin = session?.user?.role === "admin";
 
@@ -79,52 +81,58 @@ export default function Header() {
             <div
                 className={` hidden lg:flex items-center justify-center 
               fixed  left-1/2 -translate-x-1/2 z-40 
-               backdrop-blur-md border border-black/15 dark:border-gray-800 rounded-xl shadow-sm
+               backdrop-blur-md border border-black/15 rounded-xl shadow-sm
               transition-all duration-500 ease-in-out
-              ${compact ? "w-70 py-3 px-2 top-2 bg-white/70 dark:bg-gray-700/50" : "w-95 md:w-120 px-4 xl:w-170 py-2 xl:px-6 top-5 bg-white/70 dark:bg-gray-800"}`}
+              ${compact ? "w-10 h-10 rounded-full bg-white/70 dark:bg-gray-700/50 dark:border-gray-700/60 shadow-xl" : "w-95 md:w-120 px-4 xl:w-170 py-2 xl:px-6 top-5 bg-white/70 dark:bg-gray-800"}`}
             >
-                {/* ABOUT */}
-                <ProgressLink href="/about" className="flex-1 flex justify-center cursor-pointer items-center gap-2 overflow-hidden">
-                    <FaInfoCircle className={`text-[#0F766E] dark:text-white text-lg ${compact ? "block" : "hidden"}`} />
-                    <span
-                        className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] font-medium dark:text-white duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
-                            }`}
+
+                {compact ? <FaAngleDoubleUp
+                    className="cursor-pointer text-gray-700 dark:text-gray-200"
+                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                /> : (<>
+                    <ProgressLink href="/about" className="flex-1 flex justify-center cursor-pointer items-center gap-2 overflow-hidden">
+
+                        <span
+                            className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] font-medium dark:text-white duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
+                                }`}
+                        >
+                            What this is About
+                        </span>
+                    </ProgressLink>
+
+                    <div className="mx-2 xl:mx-4 h-5 w-px bg-black/20 dark:bg-gray-700" />
+
+                    {/* LAKES */}
+                    <ProgressLink
+                        href="/lake-categories"
+                        className="flex-1 flex justify-center items-center gap-2 overflow-hidden"
                     >
-                        What this is About
-                    </span>
-                </ProgressLink>
 
-                <div className="mx-2 xl:mx-4 h-5 w-px bg-black/20 dark:bg-gray-700" />
+                        <span
+                            className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] font-medium dark:text-white duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
+                                }`}
+                        >
+                            Explore Small Lakes
+                        </span>
+                    </ProgressLink>
 
-                {/* LAKES */}
-                <ProgressLink
-                    href="/lake-categories"
-                    className="flex-1 flex justify-center items-center gap-2 overflow-hidden"
-                >
-                    <FaWater className={`text-[#0F766E] dark:text-white text-lg ${compact ? "block" : "hidden"}`} />
-                    <span
-                        className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] font-medium dark:text-white duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
-                            }`}
+                    <div className="mx-2 xl:mx-4 h-5 w-px bg-black/20 dark:bg-gray-700" />
+
+                    {/* COMMUNITY */}
+                    <ProgressLink
+                        href="/community"
+                        className="flex-1 flex justify-center items-center gap-2 overflow-hidden"
                     >
-                        Explore Small Lakes
-                    </span>
-                </ProgressLink>
 
-                <div className="mx-2 xl:mx-4 h-5 w-px bg-black/20 dark:bg-gray-700" />
+                        <span
+                            className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] font-medium dark:text-white duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
+                                }`}
+                        >
+                            Engage in Community
+                        </span>
+                    </ProgressLink></>)}
 
-                {/* COMMUNITY */}
-                <ProgressLink
-                    href="/community"
-                    className="flex-1 flex justify-center items-center gap-2 overflow-hidden"
-                >
-                    <RiUserCommunityFill className={`text-[#0F766E] dark:text-white text-lg ${compact ? "block" : "hidden"}`} />
-                    <span
-                        className={`whitespace-nowrap transition-all text-xs xl:text-sm text-[#0F766E] font-medium dark:text-white duration-500 ease-in-out ${compact ? "hidden" : "opacity-100"
-                            }`}
-                    >
-                        Engage in Community
-                    </span>
-                </ProgressLink>
+
             </div>
             <div className="flex justify-end items-center gap-2 ">
                 <HeaderSearch />
@@ -228,12 +236,13 @@ export default function Header() {
 
                         {!session ? (
                             <button
-                                onClick={() => setIsOpen(true)}
+                                onClick={() => setModalType("login")}
                                 className="flex cursor-pointer items-center gap-2 w-full text-left px-4 py-2 text-sm text-green-700 dark:text-[#19b5e4] hover:bg-black/5 transition"
                             >
-                                <FaSignInAlt/>
+                                <FaSignInAlt />
                                 Login
                             </button>
+
                         ) : (
                             <button
                                 onClick={handleLogout}
@@ -247,9 +256,8 @@ export default function Header() {
 
                 </div>
 
-                <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                    <LoginModalContent onClose={() => setIsOpen(false)} />
-                </Modal>
+                <AuthModals modalType={modalType} setModalType={setModalType} />
+
 
             </div>
 

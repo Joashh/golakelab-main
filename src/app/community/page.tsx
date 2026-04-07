@@ -3,17 +3,29 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
+type WPTerm = {
+  id: number;
+  name: string;
+  taxonomy: string;
+};
 
+// Type for embedded objects inside a post
+interface WPEmbedded {
+  author?: { name: string }[];
+  "wp:featuredmedia"?: { source_url: string }[];
+  "wp:term"?: WPTerm[][];
+}
+
+// WordPress post type
 type WPPost = {
   id: number;
   title: { rendered: string };
   content: { rendered: string };
   date: string;
-  _embedded?: {
-    author?: { name: string }[];
-  };
+  _embedded?: WPEmbedded; // use the unified embedded type
 };
 
+// WordPress comment type
 type WPComment = {
   id: number;
   author_name: string;
@@ -184,6 +196,8 @@ export default function Community() {
     }));
   };
 
+
+
   // ✅ Loading + Error UI
   if (loading) {
     return (
@@ -327,7 +341,7 @@ export default function Community() {
         <div className="flex justify-end">
           <button
             onClick={handleCreatePost}
-            className="px-5 py-2.5 rounded-xl bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 dark:hover:bg-teal-500 transition"
+            className="px-5 py-2.5 rounded-xl bg-[#09637e]  text-white text-sm font-medium  dark:hover:bg-[#0a5650] transition"
           >
             Publish
           </button>
@@ -342,6 +356,9 @@ export default function Community() {
 
           const author = post._embedded?.author?.[0]?.name || "Unknown";
           const postComments = comments[post.id] || [];
+          const postCategories = post._embedded?.["wp:term"]
+            ?.flat() // flatten nested arrays
+            .filter(term => term.taxonomy === "category"); // only default categories
 
           return (
             <div
@@ -360,9 +377,17 @@ export default function Community() {
                   <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
                     {author}
                   </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
-                    {new Date(post.date).toLocaleString()}
-                  </p>
+                  <div>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
+                      {new Date(post.date).toLocaleString()} &nbsp;·&nbsp;
+                      {post._embedded?.["wp:term"]
+                        ?.flat()
+                        .filter(term => term.taxonomy === "category")
+                        .map(term => term.name)
+                        .join(", ")}
+                     
+                    </p>
+                  </div>
                 </div>
 
               </div>
@@ -377,6 +402,16 @@ export default function Community() {
                 className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-5"
                 dangerouslySetInnerHTML={{ __html: post.content.rendered }}
               />
+
+              <div>
+                {post._embedded?.["wp:featuredmedia"]?.[0]?.source_url && (
+                  <img
+                    src={post._embedded["wp:featuredmedia"][0].source_url}
+                    alt={post.title?.rendered || "news"}
+                    className="w-full h-48 object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
+                  />
+                )}
+              </div>
 
               {/* Comments */}
               <div className="border-t pt-4 space-y-4 border-gray-200 dark:border-gray-700">

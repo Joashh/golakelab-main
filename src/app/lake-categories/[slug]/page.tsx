@@ -82,7 +82,28 @@ export default async function Page({ params }: Params) {
     const description = category.acf?.partner_description?.value_formatted
         || category.acf?.partner_description?.value
         || "";
-
+    const yearsofresearch =
+        category.acf?.years_of_research?.value_formatted?.toString() ||
+        category.acf?.years_of_research?.value?.toString() ||
+        "N/A";
+    const interconnected =
+        category.acf?.
+            interconnected_crater_lakes?.value_formatted?.toString() ||
+        category.acf?.
+            interconnected_crater_lakes?.value?.toString() ||
+        "N/A";
+    const partnerinsti =
+        category.acf?.
+            partner_institutions?.value_formatted?.toString() ||
+        category.acf?.
+            partner_institutions?.value?.toString() ||
+        "N/A";
+    const conservationproj =
+        category.acf?.
+            conservation_projects?.value_formatted?.toString() ||
+        category.acf?.
+            conservation_projects?.value?.toString() ||
+        "N/A";
 
     return (
         <div className="p-4 sm:p-6 max-w-6xl mx-auto">
@@ -158,7 +179,7 @@ export default async function Page({ params }: Params) {
                         </div>
 
                         <div className="flex flex-col items-start">
-                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">12</h2>
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{interconnected}</h2>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Interconnected Crater Lakes
                             </p>
@@ -172,7 +193,7 @@ export default async function Page({ params }: Params) {
                         </div>
 
                         <div className="flex flex-col items-start">
-                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">5</h2>
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{partnerinsti}</h2>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Partner Institutions
                             </p>
@@ -186,7 +207,7 @@ export default async function Page({ params }: Params) {
                         </div>
 
                         <div className="flex flex-col items-start">
-                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">20+</h2>
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{yearsofresearch}</h2>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Years of Research
                             </p>
@@ -200,7 +221,7 @@ export default async function Page({ params }: Params) {
                         </div>
 
                         <div className="flex flex-col items-start">
-                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">8</h2>
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{conservationproj}</h2>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Conservation Projects
                             </p>

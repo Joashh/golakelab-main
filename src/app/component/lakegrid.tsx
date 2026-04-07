@@ -93,7 +93,7 @@ export default function LakeCard({ lake }: { lake: Lake }) {
 
         <div className="mt-4">
           <ProgressLink href={`/lakes/${lake.slug}`}>
-            <button className="flex gap-2 cursor-pointer items-center py-2 text-left rounded-lg text-[#09637e]   dark:text-white hover:opacity-90 transition font-medium w-full">
+            <button className="flex items-center cursor-pointer gap-1 px-3 py-2 text-xs font-medium bg-[#09637e] hover:bg-[#0f766e] text-white rounded-md transition">
               View Full Details
               <HiArrowNarrowRight />
             </button>

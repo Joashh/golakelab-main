@@ -24,14 +24,7 @@ export default function AccessButtons() {
         Related Articles
       </button>
 
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="flex items-center gap-1 cursor-pointer px-3 py-2 text-sm font-medium bg-[#09637e] hover:bg-[#0f766e] text-white rounded-lg transition"
-      >
-        <FiUnlock className="w-4 h-4" />
-        Request Full Access
-      </button>
-
+      
       <ShareButton link={url} />
 
       {/* Modal */}
