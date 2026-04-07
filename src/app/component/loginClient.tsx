@@ -11,8 +11,12 @@ import { RxCross2 } from "react-icons/rx";
 
 import { IoArrowBackOutline } from "react-icons/io5";
 
+interface LoginModalProps {
+  onClose: () => void;
+  openRegister?: () => void; // make optional
+}
 
-export default function LoginModalContent({onClose, openRegister}: {onClose: () => void;openRegister: () => void;}) 
+export default function LoginModalContent({ onClose, openRegister }: LoginModalProps) 
 {
     const images = ["/images/7.jpg", "/images/8.png", "/images/9.png"];
     const [current, setCurrent] = useState(0);

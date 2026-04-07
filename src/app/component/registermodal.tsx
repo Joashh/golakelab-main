@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface RegisterModalProps {
   onClose: () => void;
-  
+  openRegister?: () => void; // optional
 }
 
 export default function RegisterModalContent({ onClose }: RegisterModalProps) {
