@@ -189,7 +189,7 @@ export default function LoginModalContent({ onClose, openRegister }: LoginModalP
                                 alt="Google"
                                 className="w-4 h-4"
                             />
-                            Login with Google (Maintenance)
+                            Login with Google (Beta)
                         </button>
                     </form>
                     <p className="text-xs text-center text-gray-500 mt-6">
