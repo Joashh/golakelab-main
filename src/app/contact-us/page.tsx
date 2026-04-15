@@ -10,6 +10,10 @@ export default function ContactUs() {
   const [fetchingRoles, setFetchingRoles] = useState(false);
 
   const isAdmin = roles.includes("administrator");
+  const [newPassword, setNewPassword] = useState("");
+  const [updating, setUpdating] = useState(false);
+  const [message, setMessage] = useState("");
+
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -35,6 +39,42 @@ export default function ContactUs() {
     fetchRoles();
   }, [session]);
 
+  const changePassword = async () => {
+  if (!session?.accessToken) return;
+
+  setUpdating(true);
+  setMessage("");
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/users/me`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          password: newPassword,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(JSON.stringify(data));
+    }
+
+    setMessage("✅ Password updated successfully!");
+  } catch (err) {
+    console.error(err);
+    setMessage("❌ Failed to update password");
+  } finally {
+    setUpdating(false);
+  }
+};
+
   return (
     <div className="p-6 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Current User Info</h1>
@@ -48,7 +88,8 @@ export default function ContactUs() {
           <p><strong>Email:</strong> {session.user?.email}</p>
           <p><strong>Roles:</strong> {roles.join(", ") || "N/A"}</p>
           <p><strong>Access Token:</strong> {session.accessToken}</p>
-
+          <p>{status}</p>
+          <pre>{JSON.stringify(session, null, 2)}</pre>
           {fetchingRoles && <p>Fetching roles...</p>}
 
           {isAdmin && !fetchingRoles && (
@@ -63,6 +104,29 @@ export default function ContactUs() {
           )}
         </div>
       )}
+
+      <div className="mt-6">
+  <h2 className="text-lg font-semibold mb-2">Reset Password</h2>
+
+  <input
+    type="password"
+    placeholder="New password"
+    value={newPassword}
+    onChange={(e) => setNewPassword(e.target.value)}
+    className="border p-2 w-full mb-2"
+  />
+
+  <button
+    onClick={changePassword}
+    disabled={updating}
+    className="px-4 py-2 bg-blue-600 text-white rounded"
+  >
+    {updating ? "Updating..." : "Change Password"}
+  </button>
+
+  {message && <p className="mt-2">{message}</p>}
+</div>
+
     </div>
   );
 }

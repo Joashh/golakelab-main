@@ -4,13 +4,13 @@ import "./globals.css";
 import "nprogress/nprogress.css";
 import { Poppins } from "next/font/google";
 import Providers from "./component/provider";
-
-
+import ApolloWrapper from "./component/apolloprovider";
 import Header from "./component/header";
 import Footer from "./component/footer";
 import TopLoader from "./component/toploader";
 import { ThemeProvider } from "./themecontext";
 import ThemeSetter from "./component/themesetter";
+
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -32,7 +32,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GoLAKE Lab - Knowledge Sharing Platform",
   description: "The Governance Leadership, Advocacy for Knowledge Enhancement Laboratory (Go LAKE Lab)is transforming small lake management by creating a dedicated platform within UPLB. We empower stakeholders with the skills, tools, and data to support evidence-based governance and sustainable lake management.",
-  
+
 };
 
 export default function RootLayout({
@@ -46,18 +46,20 @@ export default function RootLayout({
       className={`${poppins.variable} h-full antialiased `}
     >
       <body className="min-h-full flex flex-col">
+
         <ThemeProvider>
           <ThemeSetter>
-            <Providers>
-              <Header />
-              <TopLoader />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
+            <Providers> 
+                <Header />
+                <TopLoader />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
             </Providers>
           </ThemeSetter>
         </ThemeProvider>
+
       </body>
     </html>
   );

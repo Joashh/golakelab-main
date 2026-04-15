@@ -62,7 +62,7 @@ export default function Community() {
         setLoading(true);
 
         const [postsRes, categoriesRes, commentsRes] = await Promise.all([
-          fetch(`${BASE_URL}/wp-json/wp/v2/posts?_embed`),
+          fetch(`${BASE_URL}/wp-json/wp/v2/posts?_embed&_fields=id,title,content,date,author,_embedded`),
           fetch(`${BASE_URL}/wp-json/wp/v2/lake-category`), //should be on the orig posts category not acf theyre not the same
           fetch(`${BASE_URL}/wp-json/wp/v2/comments?per_page=100&_fields=id,post,content,date,author_name`)
         ]);
@@ -96,7 +96,10 @@ export default function Community() {
 
   // ✅ Create Post
   const handleCreatePost = async () => {
-    if (!session?.accessToken) return alert("Login required");
+    if (!session?.accessToken) {
+      alert("Login required");
+      return;
+    }
 
     if (!title.trim() || !content.trim()) {
       alert("Title and content are required");
@@ -113,7 +116,7 @@ export default function Community() {
         body: JSON.stringify({
           title,
           content,
-          status: "publish",
+          status: "pending", // ✅ CHANGE THIS from "publish" to "pending"
           tags,
           lake: lake ? [lake] : [],
         }),
@@ -123,10 +126,19 @@ export default function Community() {
 
       if (!res.ok) {
         console.error(data);
+        // ✅ Show user-friendly error
+        if (data.code === 'rest_cannot_publish') {
+          alert("Your post has been submitted for review and will be published after admin approval.");
+        } else {
+          alert(data.message || "Failed to create post");
+        }
         return;
       }
 
-      // ✅ Optimistic UI
+      // ✅ Success with pending status
+      alert("Your post has been submitted for review!");
+
+      // ✅ Optimistic UI (but note: post is pending, not published yet)
       setPosts(prev => [data, ...prev]);
 
       // reset form
@@ -137,6 +149,7 @@ export default function Community() {
 
     } catch (err) {
       console.error(err);
+      alert("An error occurred. Please try again.");
     }
   };
 
@@ -385,7 +398,7 @@ export default function Community() {
                         .filter(term => term.taxonomy === "category")
                         .map(term => term.name)
                         .join(", ")}
-                     
+
                     </p>
                   </div>
                 </div>

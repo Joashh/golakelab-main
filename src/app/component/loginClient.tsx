@@ -7,17 +7,16 @@ import { FiLayout, FiUpload, FiPieChart, FiChevronDown } from "react-icons/fi";
 import { FaUser, FaLock } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { RxCross2 } from "react-icons/rx";
-
+import { useSearchParams } from "next/navigation";
 
 import { IoArrowBackOutline } from "react-icons/io5";
 
 interface LoginModalProps {
-  onClose: () => void;
-  openRegister?: () => void; // make optional
+    onClose: () => void;
+    openRegister?: () => void; // make optional
 }
 
-export default function LoginModalContent({ onClose, openRegister }: LoginModalProps) 
-{
+export default function LoginModalContent({ onClose, openRegister }: LoginModalProps) {
     const images = ["/images/7.jpg", "/images/8.png", "/images/9.png"];
     const [current, setCurrent] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
@@ -25,8 +24,9 @@ export default function LoginModalContent({ onClose, openRegister }: LoginModalP
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
-    
-    
+    const params = useSearchParams();
+    const error = params.get("error");
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -38,19 +38,39 @@ export default function LoginModalContent({ onClose, openRegister }: LoginModalP
     const handleLogin = async (e: any) => {
         e.preventDefault();
         setLoading(true);
+
         const res = await signIn("credentials", {
             username,
             password,
             redirect: false,
         });
+
         setLoading(false);
 
         if (res?.ok) {
             onClose();
             router.refresh();
         } else {
-            alert("Login failed");
+            if (res?.error === "CredentialsSignin") {
+                alert("Invalid credentials or this account uses Google login.");
+            } else {
+                alert("Something went wrong. Please try again.");
+            }
         }
+    };
+
+    const getErrorMessage = (error: string | null) => {
+        if (!error) return null;
+
+        if (error.includes("not created with Google")) {
+            return "This account uses email & password. Please sign in manually.";
+        }
+
+        if (error.includes("Invalid")) {
+            return "Invalid credentials.";
+        }
+
+        return "Something went wrong. Please try again.";
     };
 
     return (
@@ -107,10 +127,16 @@ export default function LoginModalContent({ onClose, openRegister }: LoginModalP
 
 
                     <div className="text-gray-700 text-center py-6 dark:text-gray-400">
+                        {error && (
+                            <p className="text-red-500 text-xs text-center mb-2">
+                                {getErrorMessage(decodeURIComponent(error))}
+                            </p>
+                        )}
                         <h2 className="text-2xl pb-3 font-bold text-gray-800 dark:text-white  text-center">
                             Sign In
                         </h2>
                         <p className="text-xs opacity-90">Explore more data, unlock contents, and join to our growing community</p>
+
                     </div>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div className="flex flex-col relative mb-4">
@@ -167,7 +193,7 @@ export default function LoginModalContent({ onClose, openRegister }: LoginModalP
                         </button>
                     </form>
                     <p className="text-xs text-center text-gray-500 mt-6">
-                        Don’t have an account?{" "}
+                        Don't have an account?{" "}
 
                         <button onClick={openRegister}
                             className="text-teal-600 hover:underline">
@@ -180,3 +206,4 @@ export default function LoginModalContent({ onClose, openRegister }: LoginModalP
         </div>
     );
 }
+

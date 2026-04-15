@@ -23,7 +23,7 @@ type Params = {
 
 async function getSectionTypes() {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/section_type`,
+    `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/section-type`,
     { cache: "no-store" }
   );
 
@@ -65,7 +65,7 @@ async function getLakeSections(lakeId: number) {
 export default async function Page({ params }: Params) {
   const { slug } = await params;
   const session = await getServerSession(authOptions);
-  
+
 
   const lake = await getLakeBySlug(slug);
 
@@ -85,49 +85,55 @@ export default async function Page({ params }: Params) {
 
 
   if (!session) {
-  lakeSections = lakeSections.slice(0, 10).map((section: any) => {
+    lakeSections = lakeSections.slice(0, 10).map((section: any) => {
 
-    const fullHTML = section.content.rendered;
+      const fullHTML = section.content.rendered;
 
-    const preview = truncate(fullHTML, 800); 
+      const preview = truncate(fullHTML, 800);
 
-    return {
-      ...section,
-      content: {
-        ...section.content,
-        rendered:
-          preview ,
-      },
-    };
-  });
-}
+      return {
+        ...section,
+        content: {
+          ...section.content,
+          rendered:
+            preview,
+        },
+      };
+    });
+  }
 
   console.log(JSON.stringify(lakeSections, null, 2));
+
 
   // Group by taxonomy (tab name)
   const grouped: Record<string, any[]> = {};
 
   lakeSections.forEach((section: any) => {
-    const termIds = section.section_type || [];
+    const terms = section?._embedded?.["wp:term"] || [];
 
-    // If no taxonomy assigned, fallback to "Other"
-    if (termIds.length === 0) {
+    let found = false;
+
+    terms.forEach((taxonomyGroup: any[]) => {
+      taxonomyGroup.forEach((term: any) => {
+        if (term.taxonomy === "section-type") {
+          const tabName = term.name;
+
+          if (!grouped[tabName]) {
+            grouped[tabName] = [];
+          }
+
+          grouped[tabName].push(section);
+          found = true;
+        }
+      });
+    });
+
+    if (!found) {
       if (!grouped["Other"]) {
         grouped["Other"] = [];
       }
       grouped["Other"].push(section);
-      return;
     }
-
-    termIds.forEach((termId: number) => {
-      const tabName = termMap[termId] || "Other";
-
-      if (!grouped[tabName]) {
-        grouped[tabName] = [];
-      }
-
-      grouped[tabName].push(section);
-    });
   });
 
   const tabs = Object.keys(grouped);

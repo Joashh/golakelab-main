@@ -6,6 +6,8 @@ declare module "next-auth" {
   accessToken?: string;
   user: {
     role?: string;
+    id?: string;
+     wordpressId?: number; 
     name?: string | null;
     email?: string | null;
     provider?: string;
@@ -15,6 +17,7 @@ declare module "next-auth" {
   interface User {
     role?: string;
     token?: string;
+    accessToken?: string;
     user_display_name?: string;
     user_email?: string | null;
     wordpressId?: number;
@@ -27,8 +30,10 @@ declare module "next-auth/jwt" {
     role?: string;
     accessToken?: string;
     name?: string;
+    wordpressId?: number;
     email?: string;
     provider?: string;
+     sub?: string;
   }
 }
 

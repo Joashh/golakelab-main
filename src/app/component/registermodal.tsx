@@ -157,6 +157,15 @@ export default function RegisterModalContent({ onClose }: RegisterModalProps) {
         </button>
       </p>
 
+      <button
+        type="button"
+        onClick={() => signIn("google", { callbackUrl: "/" })}
+        className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 text-xs py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm"
+      >
+        <img src="/google.png" alt="Google" className="w-4 h-4" />
+        Continue with Google
+      </button>
+
     </div>
   );
 }

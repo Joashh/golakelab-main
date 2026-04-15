@@ -1,69 +1,44 @@
-// lib/wordpress.ts - Alternative using JWT
+// app/lib/wordpress.ts
+
 export async function createOrGetWordPressUser(email: string, name: string) {
   try {
-    // First, get a JWT token using admin credentials
-    const tokenRes = await fetch(`${process.env.NEXT_PUBLIC_WP_URL}/wp-json/jwt-auth/v1/token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: process.env.WP_ADMIN_USERNAME,
-        password: process.env.WP_ADMIN_PASSWORD,
-      }),
-    });
+    console.log("Calling createOrGetWordPressUser with:", { email, name });
     
-    const tokenData = await tokenRes.json();
-    
-    if (!tokenRes.ok || !tokenData.token) {
-      console.error('Failed to get JWT token:', tokenData);
-      return null;
-    }
-    
-    const headers = {
-      'Authorization': `Bearer ${tokenData.token}`,
-      'Content-Type': 'application/json',
-    };
-    
-    // Check if user exists
-    const checkUserRes = await fetch(
-      `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/users?search=${encodeURIComponent(email)}`,
-      { headers }
-    );
-    
-    if (checkUserRes.ok) {
-      const users = await checkUserRes.json();
-      const existingUser = users.find((u: any) => u.email === email);
-      if (existingUser) return existingUser;
-    }
-    
-    // Create new user
-    const username = email.split('@')[0];
-    const randomPassword = Math.random().toString(36).slice(-12) + 'Aa1!';
-    
-    const createUserRes = await fetch(
-      `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/users`,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/custom/v1/google-login`,
       {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          email,
-          username,
-          name,
-          password: randomPassword,
-          roles: ['subscriber'],
-        }),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.WP_API_SECRET!,
+        },
+        body: JSON.stringify({ email, name }),
       }
     );
+
+    console.log("WordPress API response status:", res.status);
     
-    if (createUserRes.ok) {
-      return await createUserRes.json();
+    const data = await res.json();
+    console.log("WordPress API response data:", data);
+
+    if (!res.ok) {
+      throw new Error(
+        `Failed to sync user with WordPress (status: ${res.status}): ${JSON.stringify(data)}`
+      );
     }
-    
-    const errorText = await createUserRes.text();
-    console.error('Failed to create user:', errorText);
-    return null;
-    
+
+    if (!data || !data.id) {
+      throw new Error("Invalid response from WordPress");
+    }
+
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      role: data.role || 'subscriber'
+    };
   } catch (error) {
-    console.error('Error in createOrGetWordPressUser:', error);
-    return null;
+    console.error("createOrGetWordPressUser error:", error);
+    throw error; // Re-throw to be caught in signIn callback
   }
 }
