@@ -6,10 +6,12 @@ import { Poppins } from "next/font/google";
 import Providers from "./component/provider";
 import ApolloWrapper from "./component/apolloprovider";
 import { Header } from "./component/header";
+
 import Footer from "./component/footer";
 import TopLoader from "./component/toploader";
 import { ThemeProvider } from "./themecontext";
 import ThemeSetter from "./component/themesetter";
+import Three from "./component/oldheader";
 
 
 

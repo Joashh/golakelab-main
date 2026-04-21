@@ -17,7 +17,7 @@ import Modal from "./loginmodal";
 import LoginModalContent from "./loginClient";
 import AuthModals from "./authmodals";
 
-export default function three() {
+export default function Three() {
     const [isOpen, setIsOpen] = useState(false);
     const [open, setOpen] = useState(false);
     const { data: session } = useSession();

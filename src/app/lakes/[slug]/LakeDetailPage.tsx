@@ -50,7 +50,8 @@ export default function LakeDetailPage({ data }: LakeDetailPageProps) {
   const { lake, sections, tabs, metadata, category, image, isLoggedIn } = data;
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
-
+  const stripHtml = (html: string) =>
+    html.replace(/<[^>]+>/g, '');
 
   if (!lake) {
     return (
@@ -92,9 +93,9 @@ export default function LakeDetailPage({ data }: LakeDetailPageProps) {
                 <span>Back to Category</span>
               </ProgressLink>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">{lake.title.rendered}</h1>
-              <p className="text-lg text-white/90 max-w-3xl line-clamp-2" dangerouslySetInnerHTML={{
-                __html: lake.content?.rendered || "",
-              }}></p>
+              <p className="text-lg text-white/90 max-w-3xl line-clamp-2">
+                {stripHtml(lake.content?.rendered || '')}
+              </p>
             </div>
           </div>
         </div>
