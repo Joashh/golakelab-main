@@ -187,7 +187,7 @@ export default function LakeDetailPage({ data }: LakeDetailPageProps) {
             </button>
           </div>
 
-          <div className="bg-white relative dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white relative  rounded-2xl shadow-sm border border-gray-100  p-6">
 
             {tabs.length > 0 && <Overlay />}
             {tabs.length === 0 && <h1 className="text-center text-gray-500">No data retrieved</h1>}
