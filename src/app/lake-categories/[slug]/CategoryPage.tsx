@@ -529,13 +529,13 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
         </Tabs>
       </main>
 
-      <div className="py-18 p-6  bg-gray-50 dark:bg-gray-800 border dark:border-gray-800 border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white text-center mb-6">
+      <div className="py-18 p-6  bg-gray-50 border  border-gray-200">
+        <h2 className="text-xl font-semibold text-gray-900  text-center mb-6">
           Partners
         </h2>
 
 
-        <div className="flex flex-wrap justify-center items-center gap-10 mb-6">
+        <div className=" flex flex-wrap justify-center items-center gap-10 mb-6">
           {partners.map((partner) => {
             // Get featured image URL safely
             const logoUrl =
@@ -560,7 +560,7 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
 
 
         {description && (
-          <p className="text-sm mb-8 text-gray-600 dark:text-white/70  leading-relaxed max-w-4xl mx-auto text-center">
+          <p className="text-sm mb-8 text-gray-600   leading-relaxed max-w-4xl mx-auto text-center">
             {description}
           </p>
         )}
