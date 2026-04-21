@@ -9,14 +9,7 @@
   --highlight-color: #0F766E;   /* Highlight / hover */
 }
 
-/* Dark mode variables */
-[data-theme="dark"] {
-  --background: #101828;        /* Dark gray-blue background */
-  --foreground: #E2E8F0;        /* Off-white text */
-  --primary-color: #4FD1C5;     /* Lighter teal for contrast */
-  --secondary-color: #2C7A7B;   /* Muted teal */
-  --highlight-color: #38B2AC;   /* Hover / focus accent */
-}
+
 
 /* Theme mapping */
 @theme inline {
