@@ -16,7 +16,7 @@ interface Lake {
   _embedded?: any;
 }
 
-export default function LakeCard({ lake }: { lake: Lake }) {
+export default function LakeCard2({ lake }: { lake: Lake }) {
   const image = lake._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/placeholder.jpg';
   const description = lake.excerpt?.rendered || lake.content?.rendered || '';
   const acf = lake.acf || {};

@@ -9,6 +9,7 @@ import LakeGrid from "@/app/component/wrappercard";
 import SmileySurvey from "@/app/component/smileysurvey";
 import RelatedNews from "@/app/component/relatednews";
 import RelatedJournal from "@/app/component/relatesJournal";
+import { CategoryPage } from "./CategoryPage";
 
 
 
@@ -104,13 +105,29 @@ export default async function Page({ params }: Params) {
         category.acf?.
             conservation_projects?.value?.toString() ||
         "N/A";
+    const aboutregion =
+        category.acf?.
+            about_this_region?.value_formatted?.toString() ||
+        category.acf?.
+            about_this_region?.value?.toString() ||
+        "N/A";
 
-    return (
-        <div className="p-4 sm:p-6 max-w-6xl mx-auto">
+    return  <CategoryPage
+                category={category}
+                lakes={lakes}
+                partners={partners}
+                description={description}
+                yearsofresearch={yearsofresearch}
+                interconnected={interconnected}
+                partnerinsti={partnerinsti}
+                conservationproj={conservationproj}
+                aboutthisregion={aboutregion}
+            />
 
+            {/*
             <div className="mb-6 sm:mb-8">
 
-                {/* Breadcrumbs */}
+             
                 <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-3 flex-wrap">
 
                     <ProgressLink href="/" className="hover:text-teal-600 transition">
@@ -125,27 +142,25 @@ export default async function Page({ params }: Params) {
 
                     <ChevronRight className="w-4 h-4 mx-2 text-gray-400 shrink-0" />
 
-                    {/* Prevent long category names from breaking layout */}
                     <span className="text-gray-700 dark:text-white/80 font-medium truncate max-w-35 sm:max-w-none">
                         {category.name}
                     </span>
 
                 </div>
 
-                {/* Title with accent */}
+                
                 <div className="flex items-start gap-3">
 
-                    {/* Accent line (responsive height) */}
                     <div className="w-1.5 h-8 sm:h-10 bg-teal-600 rounded-full mt-1 shrink-0" />
 
                     <div className="min-w-0">
 
-                        {/* Responsive title */}
+                     
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight wrap-break-words">
                             {category.name}
                         </h1>
 
-                        {/* Responsive description */}
+                     
                         <p className="text-xs sm:text-sm text-gray-500 mt-1 max-w-full sm:max-w-xl leading-relaxed">
                             Explore lakes under this category and their unique features.
                         </p>
@@ -159,7 +174,7 @@ export default async function Page({ params }: Params) {
 
             <div className="flex flex-col lg:flex-row gap-6 mt-10 items-stretch">
 
-                {/* LEFT: Description */}
+            
                 <div className="lg:w-1/2">
                     <h1 className="text-2xl text-gray-900 dark:text-white mb-2">
                         About the {category.name}
@@ -169,10 +184,10 @@ export default async function Page({ params }: Params) {
                     </p>
                 </div>
 
-                {/* RIGHT: Stats Grid */}
+              
                 <div className="lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
 
-                    {/* Card */}
+                  
                     <div className="flex flex-col justify-between p-5 rounded-xl bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 h-full">
                         <div className="text-blue-600 dark:text-blue-400 text-2xl">
                             <FiMapPin />
@@ -186,7 +201,7 @@ export default async function Page({ params }: Params) {
                         </div>
                     </div>
 
-                    {/* Card */}
+                 
                     <div className="flex flex-col justify-between p-5 rounded-xl bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 h-full">
                         <div className="text-green-600 dark:text-green-400 text-2xl">
                             <FiUsers />
@@ -200,7 +215,7 @@ export default async function Page({ params }: Params) {
                         </div>
                     </div>
 
-                    {/* Card */}
+                   
                     <div className="flex flex-col justify-between p-5 rounded-xl bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 h-full">
                         <div className="text-yellow-600 dark:text-yellow-400 text-2xl">
                             <FiClock />
@@ -214,7 +229,7 @@ export default async function Page({ params }: Params) {
                         </div>
                     </div>
 
-                    {/* Card */}
+                    
                     <div className="flex flex-col justify-between p-5 rounded-xl bg-purple-50 dark:bg-purple-900 border border-purple-200 dark:border-purple-700 h-full">
                         <div className="text-purple-600 dark:text-purple-400 text-2xl">
                             <RiLeafFill />
@@ -233,15 +248,14 @@ export default async function Page({ params }: Params) {
 
             <div className="mt-12">
 
-                {/* Title */}
+                
                 <h2 className="text-2xl text-gray-900 dark:text-white mb-6">
                     Our Research Focus Areas
                 </h2>
 
-                {/* Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                    {/* Water Quality */}
+                    
                     <div className="p-5 rounded-xl bg-blue-50 dark:bg-blue-900 border border-blue-100 dark:border-blue-700 hover:shadow-md transition">
                         <div className="text-blue-600 dark:text-blue-400 text-2xl mb-3">
                             <FiDroplet />
@@ -253,7 +267,7 @@ export default async function Page({ params }: Params) {
                         </p>
                     </div>
 
-                    {/* Biodiversity */}
+                 
                     <div className="p-5 rounded-xl bg-green-50 dark:bg-green-900 border border-green-100 dark:border-green-700 hover:shadow-md transition">
                         <div className="text-green-600 dark:text-green-400 text-2xl mb-3">
                             <FiFeather />
@@ -265,7 +279,7 @@ export default async function Page({ params }: Params) {
                         </p>
                     </div>
 
-                    {/* Conservation */}
+                    
                     <div className="p-5 rounded-xl bg-emerald-50 dark:bg-emerald-900 border border-emerald-100 dark:border-emerald-700 hover:shadow-md transition">
                         <div className="text-emerald-600 dark:text-emerald-400 text-2xl mb-3">
                             <RiLeafFill />
@@ -277,7 +291,7 @@ export default async function Page({ params }: Params) {
                         </p>
                     </div>
 
-                    {/* Climate Impact */}
+                  
                     <div className="p-5 rounded-xl bg-sky-50 dark:bg-sky-900 border border-sky-100 dark:border-sky-700 hover:shadow-md transition">
                         <div className="text-sky-600 dark:text-sky-400 text-2xl mb-3">
                             <FiCloud />
@@ -302,7 +316,7 @@ export default async function Page({ params }: Params) {
                     Partners
                 </h2>
 
-                {/* Logos */}
+                
                 <div className="flex flex-wrap justify-center items-center gap-10 mb-6">
                     {partners.map((partner) => {
                         // Get featured image URL safely
@@ -326,7 +340,7 @@ export default async function Page({ params }: Params) {
                     })}
                 </div>
 
-                {/* Description */}
+                
                 {description && (
                     <p className="text-sm text-gray-600 dark:text-white/70  leading-relaxed max-w-4xl mx-auto text-center">
                         {description}
@@ -334,6 +348,7 @@ export default async function Page({ params }: Params) {
                 )}
             </div>
             <SmileySurvey />
-        </div>
-    );
+            */}
+        
+    ;
 }

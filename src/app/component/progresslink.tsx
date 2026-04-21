@@ -3,6 +3,7 @@
 import Link from "next/link";
 import NProgress from "nprogress";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 interface ProgressLinkProps {
   href: string;
@@ -13,9 +14,12 @@ interface ProgressLinkProps {
 
 export default function ProgressLink({ href, children, ...props }: ProgressLinkProps) {
   const pathname = usePathname();
-  
+
+  useEffect(() => {
+    NProgress.done();
+  }, [pathname]);
+
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Don't start progress if we're already on this page
     if (pathname === href) {
       e.preventDefault();
       return;

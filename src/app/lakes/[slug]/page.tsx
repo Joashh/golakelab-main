@@ -14,6 +14,7 @@ import Overlay from "@/app/component/overlay";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import truncate from "html-truncate";
+import LakeDetailPage from "./LakeDetailPage";
 
 type Params = {
   params: {
@@ -143,7 +144,6 @@ export default async function Page({ params }: Params) {
   const depth = lake.acf?.maximum_depth?.value;
   const area = lake.acf?.surface_area?.value;
   const fish = lake.acf?.type_of_fish_present?.value;
-
   const categories = lake._embedded?.["wp:term"]?.flat() || [];
   const category = categories.find((term: any) => term.taxonomy === "lake-category");
 
@@ -155,31 +155,45 @@ export default async function Page({ params }: Params) {
 
 
   return (
+    <LakeDetailPage
+      data={{
+        lake,
+        sections: grouped,
+        tabs,
+        metadata: { barangay, distance, depth, area, fish },
+        category,
+        image,
+        isLoggedIn: !!session,
+      }}
+    />
+  );
+
+  {/*(
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 ">
 
 
-      {/* HERO */}
+      
       <div className="relative h-72 md:h-80">
 
-        {/* Background Image */}
+     
         <img src={image} className="w-full h-full object-cover" />
 
-        {/* Overlay */}
+       
         <div className="absolute inset-0 bg-black/60" />
 
-        {/* Content */}
+       
         <div className="absolute inset-0 flex items-center">
 
           <div className="max-w-7xl mx-auto px-6 w-full text-white">
 
 
 
-            {/* Title */}
+       
             <h1 className="text-3xl md:text-5xl font-semibold leading-tight">
               {lake.title.rendered}
             </h1>
 
-            {/* Breadcrumbs */}
+         
             <div className="flex flex-wrap items-center text-sm text-white/70 gap-y-1 mb-3">
 
               <ProgressLink href="/" className="hover:text-white transition">
@@ -266,18 +280,17 @@ export default async function Page({ params }: Params) {
 
       </div>
 
-      {/* MAIN CONTENT */}
+     
       <div className="max-w-7xl mx-auto  py-10 flex flex-col gap-8">
 
 
         <div className="space-y-8">
 
-          {/* DESCRIPTION */}
+         
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
 
             <div className="flex flex-col md:flex-row gap-6">
 
-              {/* LEFT: IMAGE */}
               <div className="shrink-0">
                 <div className="w-full md:w-48 h-48 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600 shadow-sm">
                   <img
@@ -288,22 +301,20 @@ export default async function Page({ params }: Params) {
                 </div>
               </div>
 
-              {/* RIGHT: INFO */}
               <div className="flex-1 space-y-4">
 
-                {/* NAME + BUTTONS + LOCATION */}
+               
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
 
-                  {/* NAME */}
+                  
                   <h3 className="text-2xl font-semibold text-[#0F766E] dark:text-teal-200">
                     {lake.title.rendered}
                   </h3>
 
-                  {/* BUTTONS */}
                   <LakeActions />
                 </div>
 
-                {/* LOCATION */}
+                
                 {barangay && (
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
                     <span><FaLocationDot className="dark:text-teal-300" /></span>
@@ -311,10 +322,10 @@ export default async function Page({ params }: Params) {
                   </p>
                 )}
 
-                {/* DIVIDER */}
+               
                 <div className="border-t border-gray-100 dark:border-gray-600" />
 
-                {/* BIO / DESCRIPTION */}
+                
                 <div>
                   <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
                     About This Lake
@@ -332,7 +343,7 @@ export default async function Page({ params }: Params) {
 
           </div>
 
-          {/* TABS */}
+       
           <div className="bg-white relative dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
 
             {tabs.length > 0 && <Overlay />}
@@ -349,4 +360,5 @@ export default async function Page({ params }: Params) {
 
     </div>
   );
+  */}
 }

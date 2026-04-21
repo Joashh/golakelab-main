@@ -5,11 +5,12 @@ import "nprogress/nprogress.css";
 import { Poppins } from "next/font/google";
 import Providers from "./component/provider";
 import ApolloWrapper from "./component/apolloprovider";
-import Header from "./component/header";
+import { Header } from "./component/header";
 import Footer from "./component/footer";
 import TopLoader from "./component/toploader";
 import { ThemeProvider } from "./themecontext";
 import ThemeSetter from "./component/themesetter";
+
 
 
 const poppins = Poppins({
@@ -50,7 +51,8 @@ export default function RootLayout({
         <ThemeProvider>
           <ThemeSetter>
             <Providers> 
-                <Header />
+              <Header/>
+                
                 <TopLoader />
                 <main className="flex-1">
                   {children}

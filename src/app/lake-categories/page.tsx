@@ -1,7 +1,9 @@
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
+
 import ProgressLink from "@/app/component/progresslink";
 import SmileySurvey from "@/app/component/smileysurvey";
+
+import { ArrowRight, Droplets } from 'lucide-react';
 
 type Category = {
   id: number;
@@ -32,44 +34,46 @@ export default async function LakeCategories() {
 
   return (
 
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <div className="min-h-screen flex flex-col bg-linear-to-br from-sky-50 via-white to-emerald-50">
 
-      {/* Header */}
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Hero Section */}
+      <section className="bg-linear-to-br  from-sky-600 via-blue-600 to-emerald-600 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Breadcrumb */}
-        <div className="flex items-center text-sm text-gray-500 dark:text-white">
+          <div className="text-center"
 
-          <ProgressLink href="/" className="hover:text-gray-700 transition">
-            Home
-          </ProgressLink>
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
+              <Droplets className="size-4" />
+              <span className="text-sm">Explore Philippine Small Lakes</span>
+            </div>
 
-          <ChevronRight className="w-4 h-4 mx-2 text-gray-400" />
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+              Our Lakes
+            </h1>
 
-          <span className="text-gray-700 dark:text-white/50 font-medium">
-            Lake Categories
-          </span>
+            <p className="text-xl text-sky-100 max-w-3xl mx-auto">
+              Discover detailed information about lake ecosystems and their biodiversity
+            </p>
+          </div>
 
         </div>
+      </section>
 
-        <span className="text-xs sm:text-sm text-gray-400">
-          {categories.length} categories
-        </span>
-
-      </div>
-
+      
+    <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* List Container */}
-      <div className="space-y-4">
+      <div className="space-y-4 grid md:grid-cols-2 gap-8">
 
         {categories.map((cat) => (
           <ProgressLink
             key={cat.id}
             href={`/lake-categories/${cat.slug}`}
-            className="group flex flex-col sm:flex-row gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-gray-300 transition"
+            className="group relative bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all"
           >
 
             {/* Image */}
-            <div className="relative w-full sm:w-56 h-40 shrink-0 overflow-hidden rounded-lg">
+            <div className="relative h-64 overflow-hidden bg-slate-200">
               <img
                 src={cat.image || "/placeholder.jpg"}
                 alt={cat.name}
@@ -79,7 +83,7 @@ export default async function LakeCategories() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0 flex flex-col justify-between">
+            <div className="flex-1 min-w-0 flex flex-col justify-between p-8">
 
               <div>
 
@@ -104,14 +108,11 @@ export default async function LakeCategories() {
               </div>
 
               {/* Bottom Row */}
-              <div className="mt-3 flex items-center justify-between text-sm">
-
-                <span className="text-gray-400">
-                  View details
-                </span>
-
-                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-1 transition" />
-
+              <div
+                className="inline-flex self-start items-center gap-2 px-6 py-3 bg-linear-to-r mt-6 from-sky-600 to-emerald-600 text-white rounded-xl hover:from-sky-700 hover:to-emerald-700 transition-all group shadow-lg shadow-sky-200"
+              >
+                <span>Explore Lakes</span>
+                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
               </div>
 
             </div>
@@ -121,7 +122,7 @@ export default async function LakeCategories() {
 
       </div>
 
-      <SmileySurvey />
+      </main>
     </div>
   );
 }

@@ -8,9 +8,8 @@ type Props = {
 export default function LakeCategoriesLayout({ children }: Props) {
   return (
     <div className="flex gap-6">
-      <main className="flex-1 p-4">
+      <main className="flex-1 ">
        {children}
-        
       </main>
     </div>
   );
