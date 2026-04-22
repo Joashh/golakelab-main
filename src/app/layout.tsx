@@ -53,7 +53,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ThemeSetter>
             <Providers> 
-              <Three/>
+              <Header/>
                 
                 <TopLoader />
                 <main className="flex-1">
