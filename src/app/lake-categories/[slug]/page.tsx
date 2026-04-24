@@ -80,51 +80,26 @@ export default async function Page({ params }: Params) {
 
 
     const partners: Partner[] = await getPartnersByCategoryId(category.id);
-    const description = category.acf?.partner_description?.value_formatted
-        || category.acf?.partner_description?.value
-        || "";
-    const yearsofresearch =
-        category.acf?.years_of_research?.value_formatted?.toString() ||
-        category.acf?.years_of_research?.value?.toString() ||
-        "N/A";
-    const interconnected =
-        category.acf?.
-            interconnected_crater_lakes?.value_formatted?.toString() ||
-        category.acf?.
-            interconnected_crater_lakes?.value?.toString() ||
-        "N/A";
-    const partnerinsti =
-        category.acf?.
-            partner_institutions?.value_formatted?.toString() ||
-        category.acf?.
-            partner_institutions?.value?.toString() ||
-        "N/A";
-    const conservationproj =
-        category.acf?.
-            conservation_projects?.value_formatted?.toString() ||
-        category.acf?.
-            conservation_projects?.value?.toString() ||
-        "N/A";
-    const aboutregion =
-        category.acf?.
-            about_this_region?.value_formatted?.toString() ||
-        category.acf?.
-            about_this_region?.value?.toString() ||
-        "N/A";
+    const description = category.acf?.partner_description || "";
+    const yearsofresearch = category.acf?.years_of_research?.toString() || "N/A";
+    const interconnected = category.acf?.interconnected_crater_lakes?.toString() || "N/A";
+    const partnerinsti = category.acf?.partner_institutions?.toString() || "N/A";
+    const conservationproj = category.acf?.conservation_projects?.toString() || "N/A";
+    const aboutregion = category.acf?.about_this_region || "N/A";
 
-    return  <CategoryPage
-                category={category}
-                lakes={lakes}
-                partners={partners}
-                description={description}
-                yearsofresearch={yearsofresearch}
-                interconnected={interconnected}
-                partnerinsti={partnerinsti}
-                conservationproj={conservationproj}
-                aboutthisregion={aboutregion}
-            />
+    return <CategoryPage
+        category={category}
+        lakes={lakes}
+        partners={partners}
+        description={description}
+        yearsofresearch={yearsofresearch}
+        interconnected={interconnected}
+        partnerinsti={partnerinsti}
+        conservationproj={conservationproj}
+        aboutthisregion={aboutregion}
+    />
 
-            {/*
+    {/*
             <div className="mb-6 sm:mb-8">
 
              
@@ -349,6 +324,6 @@ export default async function Page({ params }: Params) {
             </div>
             <SmileySurvey />
             */}
-        
+
     ;
 }

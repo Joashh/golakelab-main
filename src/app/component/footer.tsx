@@ -25,7 +25,7 @@ export default function Footer() {
                             <h3 className="font-bold text-lg mb-4">Features</h3>
                             <ul className="space-y-2 text-sm">
                                 <li>
-                                    <a href="#" className="text-slate-300 hover:text-sky-400 transition-colors">
+                                    <a href="/lake-categories" className="text-slate-300 hover:text-sky-400 transition-colors">
                                         Lake Categories
                                     </a>
                                 </li>

@@ -42,12 +42,12 @@ type LakeDetailPageProps = {
     };
     category: any;
     image: string;
-    isLoggedIn: boolean;
+    //isLoggedIn: boolean;
   };
 };
 
 export default function LakeDetailPage({ data }: LakeDetailPageProps) {
-  const { lake, sections, tabs, metadata, category, image, isLoggedIn } = data;
+  const { lake, sections, tabs, metadata, category, image } = data;
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const stripHtml = (html: string) =>
@@ -189,7 +189,7 @@ export default function LakeDetailPage({ data }: LakeDetailPageProps) {
 
           <div className="bg-white relative  rounded-2xl shadow-sm border border-gray-100  p-6">
 
-            {tabs.length > 0 && <Overlay />}
+            
             {tabs.length === 0 && <h1 className="text-center text-gray-500">No data retrieved</h1>}
 
             {tabs.length > 0 && <Tabs grouped={sections} tabs={tabs} />}
@@ -213,7 +213,7 @@ export default function LakeDetailPage({ data }: LakeDetailPageProps) {
       <DownloadModal
         isOpen={downloadModalOpen}
         onClose={() => setDownloadModalOpen(false)}
-        lakeName={lake.name}
+        journal={lake.name}
       />
     </div>
   );

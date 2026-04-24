@@ -33,24 +33,24 @@ export function SegmentedNav({ onSectionChange, activeSection }: SegmentedNavPro
       }
     ];
 
-  // ✅ Tailwind-safe color mapping
+  
   const colorClasses = {
     sky: {
       bg: 'from-sky-50 to-sky-100',
       border: 'border-sky-300',
-      icon: 'from-sky-500 to-sky-600',
-      indicator: 'bg-sky-500'
+      icon: 'from-sky-50 to-sky-600',
+      indicator: 'from-sky-600 via-sky-600 to-emerald-500'
     },
     emerald: {
       bg: 'from-emerald-50 to-emerald-100',
       border: 'border-emerald-300',
-      icon: 'from-emerald-500 to-emerald-600',
-      indicator: 'bg-emerald-500'
+      icon: 'from-emerald-50 to-emerald-600',
+      indicator: 'from-emerald-500 via-emerald-500 to-blue-500'
     },
     blue: {
       bg: 'from-blue-50 to-blue-100',
       border: 'border-blue-300',
-      icon: 'from-blue-500 to-blue-600',
+      icon: 'from-blue-50 to-blue-600',
       indicator: 'bg-blue-500'
     }
   };
@@ -95,7 +95,7 @@ export function SegmentedNav({ onSectionChange, activeSection }: SegmentedNavPro
               {isActive && (
                 <motion.div
                   layoutId="activeIndicator"
-                  className={`absolute bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full ${colors.indicator}`}
+                  className={`absolute bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-linear-to-br ${colors.indicator}`}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}

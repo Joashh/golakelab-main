@@ -63,13 +63,13 @@ export default async function LakeCategories() {
       
     <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* List Container */}
-      <div className="space-y-4 grid md:grid-cols-2 gap-8">
+      <div className="space-y-4 grid md:grid-cols-2 gap-8 items-stretch">
 
         {categories.map((cat) => (
           <ProgressLink
             key={cat.id}
             href={`/lake-categories/${cat.slug}`}
-            className="group relative bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all"
+            className="group relative h-full bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all"
           >
 
             {/* Image */}
@@ -89,7 +89,7 @@ export default async function LakeCategories() {
 
                 <div className="flex items-center justify-between gap-3">
 
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white dark:group-hover:text-[#2bc3b6] group-hover:text-[#0F766E] transition line-clamp-1">
+                  <h2 className="text-lg font-semibold text-gray-900  dark:group-hover:text-[#2bc3b6] group-hover:text-[#0F766E] transition line-clamp-1">
                     {cat.name}
                   </h2>
 

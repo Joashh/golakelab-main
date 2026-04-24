@@ -59,13 +59,13 @@ async function getLakeSections(lakeId: number) {
   const data = await res.json();
 
   return data.filter((section: any) => {
-    return section?.acf?.parent_lake?.value == lakeId;
+    return section?.acf?.parent_lake == lakeId;
   });
 }
 
 export default async function Page({ params }: Params) {
   const { slug } = await params;
-  const session = await getServerSession(authOptions);
+  //const session = await getServerSession(authOptions);
 
 
   const lake = await getLakeBySlug(slug);
@@ -85,7 +85,7 @@ export default async function Page({ params }: Params) {
   let lakeSections = await getLakeSections(lake.id);
 
 
-  if (!session) {
+  /*if (!session) {
     lakeSections = lakeSections.slice(0, 10).map((section: any) => {
 
       const fullHTML = section.content.rendered;
@@ -101,7 +101,7 @@ export default async function Page({ params }: Params) {
         },
       };
     });
-  }
+  }*/
 
   console.log(JSON.stringify(lakeSections, null, 2));
 
@@ -139,11 +139,11 @@ export default async function Page({ params }: Params) {
 
   const tabs = Object.keys(grouped);
 
-  const barangay = lake.acf?.barangay?.value;
-  const distance = lake.acf?.distance_from_city_proper?.value;
-  const depth = lake.acf?.maximum_depth?.value;
-  const area = lake.acf?.surface_area?.value;
-  const fish = lake.acf?.type_of_fish_present?.value;
+  const barangay = lake.acf?.barangay;
+  const distance = lake.acf?.distance_from_city_proper;
+  const depth = lake.acf?.maximum_depth;
+  const area = lake.acf?.surface_area;
+  const fish = lake.acf?.type_of_fish_present;
   const categories = lake._embedded?.["wp:term"]?.flat() || [];
   const category = categories.find((term: any) => term.taxonomy === "lake-category");
 
@@ -163,7 +163,7 @@ export default async function Page({ params }: Params) {
         metadata: { barangay, distance, depth, area, fish },
         category,
         image,
-        isLoggedIn: !!session,
+        //isLoggedIn: !!session,
       }}
     />
   );

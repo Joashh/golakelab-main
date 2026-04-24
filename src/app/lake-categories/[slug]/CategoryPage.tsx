@@ -53,6 +53,18 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
 
   const normalizedLakes: Lake[] = lakes.map((lake) => {
     const acf = lake.acf || {};
+
+    const getNumber = (val: any) => {
+      if (val === null || val === undefined || val === "") return 0;
+      return parseFloat(val) || 0;
+    };
+
+    const getArray = (val: any) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      return [val];
+    };
+
     return {
       id: lake.id,
       slug: lake.slug,
@@ -60,14 +72,18 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
       image:
         lake._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
         "/placeholder.jpg",
-      shortDescription: lake.excerpt?.rendered || lake.content?.rendered || "",
-      barangays: acf.barangay?.value ? [acf.barangay.value] : [],
-      fishSpecies: acf.fish_species?.value ? [acf.fish_species.value] : [],
-      number_species: parseFloat(acf.number_of_fish_species?.value) || 0,
-      maxDepth: parseFloat(acf.maximum_depth?.value) || 0,
-      latitude: parseFloat(acf.latitude?.value || "0"),
-      longitude: parseFloat(acf.longitude?.value || "0"),
-      area: parseFloat(acf.surface_area?.value) || 0,
+      shortDescription:
+        lake.excerpt?.rendered || lake.content?.rendered || "",
+
+      // ✅ FIXED
+      barangays: getArray(acf.barangay),
+      fishSpecies: getArray(acf.fish_species),
+
+      number_species: getNumber(acf.number_of_fish_species),
+      maxDepth: getNumber(acf.maximum_depth),
+      latitude: getNumber(acf.latitude),
+      longitude: getNumber(acf.longitude),
+      area: getNumber(acf.surface_area),
     };
   });
 
@@ -167,7 +183,7 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
 
       {/* Hero Section */}
       <section className="relative bg-linear-to-br from-blue-600 via-sky-600 to-emerald-600 text-white py-16 md:py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30" />
+        <div className="absolute inset-0 opacity-30 bg-center bg-cover bg-no-repeat" style={{ backgroundImage: `url(${category.image})` }} />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
@@ -567,7 +583,7 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
 
         <SmileySurvey />
       </div>
-      
+
     </div>
   );
 }

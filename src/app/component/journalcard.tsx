@@ -2,90 +2,72 @@
 
 import { useState } from "react";
 import JournalModal from "./journalmodal";
-import { LuEye, LuDownload } from "react-icons/lu";
+import { Eye, Download } from "lucide-react";
 import { IoMdEye } from "react-icons/io";
+import { DownloadModal } from "./DownloadModal";
 
-export default function JournalCard({ journal }: any) {
-    const [open, setOpen] = useState(false);
-    const [stats, setStats] = useState({
-        views: journal.download_stats?.views ?? 0,
-        downloads: journal.download_stats?.downloads ?? 0
-    });
+export default function JournalCard({ journal, onClick }: any) {
 
-    // Track view when modal opens
-    const handleOpen = async () => {
-        setOpen(true);
-        
-      
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState('');
+
+    const featured =
+        journal._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+
+
+    const handleDownloadClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsModalOpen(true);
     };
-
-    // This will be called from the modal when download happens
-    const handleDownloadComplete = async () => {
-        // Fetch the updated download count
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/wpdmpro/${journal.id}`
-            );
-            const updatedJournal = await response.json();
-            setStats(prev => ({ 
-                ...prev, 
-                downloads: updatedJournal.download_stats?.downloads ?? prev.downloads + 1 
-            }));
-        } catch (error) {
-            // Optimistic update if fetch fails
-            setStats(prev => ({ ...prev, downloads: prev.downloads + 1 }));
-        }
-    };
-
-    const featured = journal._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
 
     return (
-        <>
-            <div className="group flex flex-col">
-                <div
-                    className="aspect-2/3 rounded-xl overflow-hidden cursor-pointer"
-                    onClick={handleOpen}
-                >
-                    {featured ? (
-                        <img
-                            src={featured}
-                            alt={journal.title.rendered}
-                            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                        />
-                    ) : (
-                        <>
-                            <img
-                                src="/images/blank.png"
-                                className="w-full h-full object-cover dark:hidden"
-                                alt="Placeholder"
-                            />
-                            <img
-                                src="/images/blankdark.png"
-                                className="w-full h-full object-cover hidden dark:block"
-                                alt="Placeholder"
-                            />
-                        </>
-                    )}
+        <div
+            onClick={onClick}
+            className="bg-white rounded-lg p-4 border border-slate-200 hover:border-slate-300 transition cursor-pointer"
+        >
+            <div className="flex items-start justify-between gap-4">
+
+                {/* LEFT */}
+                <div className="flex-1">
+                    <h3
+                        className="font-semibold text-slate-900 mb-1"
+                        dangerouslySetInnerHTML={{ __html: journal.title.rendered }}
+                    />
+
+                    <div className="flex items-center gap-3 text-sm text-slate-600">
+                        <span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-medium">
+                            {journal.download_url?.split(".").pop()?.toUpperCase()}
+                        </span>
+
+                        <div className="flex flex-wrap  items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+                            <span className="flex items-center gap-1 whitespace-nowrap">
+                                <Eye className="size-4 text-slate-400" />
+                                {journal.download_stats?.views ?? 0} Views
+                            </span>
+
+                            <span className="flex items-center gap-1 whitespace-nowrap">
+                                <Download className="size-4 text-slate-400" />
+                                {journal.download_stats?.downloads ?? 0} Download(s)
+                            </span>
+
+                            <span className="whitespace-nowrap">
+                                {journal.file_size ?? "—"}
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                <h3
-                    className="mt-2 text-sm font-medium line-clamp-1 text-gray-800 dark:text-white"
-                    dangerouslySetInnerHTML={{ __html: journal.title.rendered }}
-                />
 
-                <div className="flex gap-2 text-xs text-gray-500 dark:text-white/50 mt-1 ">
-                    <span className="flex gap-1 items-center"><IoMdEye className="text-[#09637e] dark:text-[#11b8ea]"/>{stats.views} </span>
-                    <span className="flex gap-1 items-center"><LuDownload className="text-[#09637e] dark:text-[#11b8ea]"/> {stats.downloads} </span>
-                </div>
+                <button onClick={handleDownloadClick} className="p-2 text-teal-600 hover:bg-slate-100 rounded-lg">
+                    <Download className="size-5" />
+                </button>
             </div>
 
-            {open && (
-                <JournalModal
-                    journal={journal}
-                    onClose={() => setOpen(false)}
-                    onDownload={handleDownloadComplete}
-                />
-            )}
-        </>
+            <DownloadModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                journal={journal} // ✅ pass full journal
+            />
+        </div>
     );
 }

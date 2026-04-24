@@ -13,7 +13,7 @@ async function getCategories(): Promise<Category[]>{
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake-category`,
     {
-      next: { revalidate: 60 }, // better than no-store
+      next: { revalidate: 60 }, 
     }
   );
 

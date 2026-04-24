@@ -1,15 +1,15 @@
 'use client'
 import { X, Download, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface DownloadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  lakeName: string;
+  journal: any;
 }
 
-export function DownloadModal({ isOpen, onClose, lakeName }: DownloadModalProps) {
+export function DownloadModal({ isOpen, onClose, journal }: DownloadModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     affiliation: '',
@@ -17,17 +17,89 @@ export function DownloadModal({ isOpen, onClose, lakeName }: DownloadModalProps)
     newsletter: false,
   });
   const [submitted, setSubmitted] = useState(false);
+  useEffect(() => {
+    if (!isOpen || !journal?.id) return;
 
-  const handleSubmit = (e: React.FormEvent) => {
+    const key = `viewed-${journal.id}`;
+    if (sessionStorage.getItem(key)) return;
+
+    sessionStorage.setItem(key, "true");
+
+    fetch(
+      `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/custom/v1/track-view/${journal.id}`,
+      { method: "POST" }
+    )
+      .then(async (res) => {
+        console.log("VIEW STATUS:", res.status);
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("VIEW ERROR BODY:", text);
+        } else {
+          const data = await res.json().catch(() => null);
+          console.log("VIEW SUCCESS:", data);
+        }
+      })
+      .catch((err) => {
+        console.error("VIEW FETCH ERROR:", err);
+      });
+
+  }, [isOpen, journal?.id]); // ✅ fixed
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock download functionality
-    console.log('Download request submitted:', formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      onClose();
-      setFormData({ name: '', affiliation: '', purpose: '', newsletter: false });
-    }, 2000);
+
+    try {
+      // Submit form
+      const submitRes = await fetch(
+        `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/custom/v1/download-submit`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            affiliation: formData.affiliation,
+            purpose: formData.purpose,
+            newsletter: formData.newsletter,
+            file_id: journal.id,
+            file_name: journal.title?.rendered,
+          }),
+        }
+      );
+
+      console.log("SUBMIT STATUS:", submitRes.status);
+
+      const submitData = await submitRes.json().catch(() => null);
+      console.log("SUBMIT RESPONSE:", submitData);
+
+      // Track download
+      const downloadRes = await fetch(
+        `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/custom/v1/track-download/${journal.id}`,
+        { method: "POST" }
+      );
+
+      console.log("DOWNLOAD STATUS:", downloadRes.status);
+
+      // IMPORTANT: Read the response data
+      const downloadData = await downloadRes.json();
+      console.log("DOWNLOAD RESPONSE DATA:", downloadData);
+
+      if (downloadData.success) {
+        console.log(`✅ Download counted! New total: ${downloadData.downloads}`);
+        console.log(`📊 WPDM downloads: ${downloadData.wpdm_downloads}`);
+      }
+
+      // Open file
+      window.open(journal.download_url, "_blank");
+      setSubmitted(true);
+
+    } catch (error) {
+      console.error("DOWNLOAD ERROR:", error);
+      window.open(journal.download_url, "_blank");
+    }
   };
 
   if (!isOpen) return null;
@@ -42,7 +114,7 @@ export function DownloadModal({ isOpen, onClose, lakeName }: DownloadModalProps)
           className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-slate-600 to-slate-700 p-6 text-white relative">
+          <div className="bg-linear-to-r from-slate-600 to-slate-700 p-6 text-white relative">
             <button
               onClick={onClose}
               className="absolute top-4 right-4 p-1 hover:bg-white/20 rounded-lg transition-colors"
@@ -53,7 +125,7 @@ export function DownloadModal({ isOpen, onClose, lakeName }: DownloadModalProps)
               <Download className="size-6" />
               <div>
                 <h2 className="font-bold text-xl">Download Data</h2>
-                <p className="text-sm text-sky-100">{lakeName}</p>
+                <p className="text-sm text-sky-100">{journal?.title?.rendered}</p>
               </div>
             </div>
           </div>
