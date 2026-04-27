@@ -37,7 +37,29 @@ export default function DownloadsClient({ journals }: any) {
     return acc;
   }, {});
 
-  const categories = Object.entries(grouped);
+  //const categories = Object.entries(grouped);
+
+  const categoryOrder: Record<string, number> = {
+    research: 1,
+    map: 2,
+    dataset: 3,
+    guideline: 4,
+  };
+
+  const getOrder = (title: string) => {
+    const t = title.toLowerCase();
+
+    if (t.includes("research")) return categoryOrder.research;
+    if (t.includes("map")) return categoryOrder.map;
+    if (t.includes("dataset")) return categoryOrder.dataset;
+    if (t.includes("guideline")) return categoryOrder.guideline;
+
+    return 999;
+  };
+
+  const sortedCategories = Object.entries(grouped).sort(
+    ([aTitle], [bTitle]) => getOrder(aTitle) - getOrder(bTitle)
+  );
 
 
   return (
@@ -70,7 +92,7 @@ export default function DownloadsClient({ journals }: any) {
           </p>
         </div>
         <div className="grid md:grid-cols-2 gap-8">
-          {categories.map(([title, items]: any, index) => {
+          {sortedCategories.map(([title, items]: any, index) => {
             const Icon = getCategoryIcon(title);
 
             return (
@@ -103,26 +125,26 @@ export default function DownloadsClient({ journals }: any) {
           })}
         </div>
 
-        
-          {/* Additional Information */}
-          <div className="mt-12 bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-            <h2 className="text-2xl font-bold text-slate-900 mb-4">Terms of Use</h2>
-            <div className="prose max-w-none text-slate-700 space-y-3">
-              <p>
-                By downloading materials from GoLake Lab, you agree to the following terms:
-              </p>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>All materials are provided for educational, research, and conservation purposes only.</li>
-                <li>Proper attribution must be given when using or citing GoLake Lab resources.</li>
-                <li>Commercial use of datasets and publications requires prior written permission.</li>
-                <li>Downloaded materials should not be redistributed without authorization.</li>
-                <li>Users are encouraged to share their research findings and contributions back to the community.</li>
-              </ul>
-              <p className="mt-4 text-sm text-slate-600">
-                For questions about data usage, collaboration opportunities, or to request specific datasets, please contact us through the About page.
-              </p>
-            </div>
+
+        {/* Additional Information */}
+        <div className="mt-12 bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Terms of Use</h2>
+          <div className="prose max-w-none text-slate-700 space-y-3">
+            <p>
+              By downloading materials from GoLake Lab, you agree to the following terms:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>All materials are provided for educational, research, and conservation purposes only.</li>
+              <li>Proper attribution must be given when using or citing GoLake Lab resources.</li>
+              <li>Commercial use of datasets and publications requires prior written permission.</li>
+              <li>Downloaded materials should not be redistributed without authorization.</li>
+              <li>Users are encouraged to share their research findings and contributions back to the community.</li>
+            </ul>
+            <p className="mt-4 text-sm text-slate-600">
+              For questions about data usage, collaboration opportunities, or to request specific datasets, please contact us through the About page.
+            </p>
           </div>
+        </div>
       </main>
     </>
   );

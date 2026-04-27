@@ -1,158 +1,27 @@
-
-import { Tabs } from "@/app/component/tab"
-import ProgressLink from "@/app/component/progresslink";
-import { ChevronRight } from "lucide-react";
-import { FaRulerHorizontal } from "react-icons/fa";
-import { FiMapPin, FiTrendingDown, FiLayers } from "react-icons/fi";
-import { IoFishOutline } from "react-icons/io5";
-import { FaLocationDot } from "react-icons/fa6";
-import { FiFileText, FiUnlock, FiShare2 } from 'react-icons/fi';
-import SmileySurvey from "@/app/component/smileysurvey";
-import RightModal from "@/app/component/rightmodal";
-import LakeActions from "@/app/component/lakeActions";
-import Overlay from "@/app/component/overlay";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import truncate from "html-truncate";
 import LakeDetailPage from "./LakeDetailPage";
-
+import { getLakeBySlug } from "@/app/lib/data";
+import { getSectionTypes } from "@/app/lib/data";
+import { getLakeSections } from "@/app/lib/data";
+import { normalizeLake } from "@/app/lib/data";
 type Params = {
   params: {
     slug: string;
   };
 };
 
-async function getSectionTypes() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/section-type`,
-    { cache: "no-store" }
-  );
-
-  return res.json();
-}
-
-async function getLakesByCategoryId(categoryId: number) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake?lake-category=${categoryId}&_embed&acf_format=standard`,
-    { cache: "no-store" }
-  );
-
-  return res.json();
-}
-
-async function getLakeBySlug(slug: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake?slug=${slug}&_embed`,
-    { cache: "no-store" }
-  );
-
-  const data = await res.json();
-  return data[0];
-}
-
-async function getLakeSections(lakeId: number) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake-section?_embed&order=asc&orderby=date`,
-    { cache: "no-store" }
-  );
-
-  const data = await res.json();
-
-  return data.filter((section: any) => {
-    return section?.acf?.parent_lake == lakeId;
-  });
-}
 
 export default async function Page({ params }: Params) {
   const { slug } = await params;
-  //const session = await getServerSession(authOptions);
 
+  const rawLake = await getLakeBySlug(slug);
 
-  const lake = await getLakeBySlug(slug);
-
-  const sectionTypes = await getSectionTypes();
-
-  const termMap: Record<number, string> = {};
-
-  sectionTypes.forEach((term: any) => {
-    termMap[term.id] = term.name;
-  });
-
-  if (!lake) {
+  if (!rawLake) {
     return <div>Lake not found</div>;
   }
 
-  let lakeSections = await getLakeSections(lake.id);
+  const lakeSections = await getLakeSections(rawLake.id);
 
-
-  /*if (!session) {
-    lakeSections = lakeSections.slice(0, 10).map((section: any) => {
-
-      const fullHTML = section.content.rendered;
-
-      const preview = truncate(fullHTML, 800);
-
-      return {
-        ...section,
-        content: {
-          ...section.content,
-          rendered:
-            preview,
-        },
-      };
-    });
-  }*/
-
-  console.log(JSON.stringify(lakeSections, null, 2));
-
-
-  // Group by taxonomy (tab name)
-  const grouped: Record<string, any[]> = {};
-
-  lakeSections.forEach((section: any) => {
-    const terms = section?._embedded?.["wp:term"] || [];
-
-    let found = false;
-
-    terms.forEach((taxonomyGroup: any[]) => {
-      taxonomyGroup.forEach((term: any) => {
-        if (term.taxonomy === "section-type") {
-          const tabName = term.name;
-
-          if (!grouped[tabName]) {
-            grouped[tabName] = [];
-          }
-
-          grouped[tabName].push(section);
-          found = true;
-        }
-      });
-    });
-
-    if (!found) {
-      if (!grouped["Other"]) {
-        grouped["Other"] = [];
-      }
-      grouped["Other"].push(section);
-    }
-  });
-
-  const tabs = Object.keys(grouped);
-
-  const barangay = lake.acf?.barangay;
-  const distance = lake.acf?.distance_from_city_proper;
-  const depth = lake.acf?.maximum_depth;
-  const area = lake.acf?.surface_area;
-  const fish = lake.acf?.type_of_fish_present;
-  const categories = lake._embedded?.["wp:term"]?.flat() || [];
-  const category = categories.find((term: any) => term.taxonomy === "lake-category");
-
-  const image =
-    lake._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
-    "/placeholder.jpg";
-
-
-
+  const { lake, grouped, tabs } = normalizeLake(rawLake, lakeSections);
 
   return (
     <LakeDetailPage
@@ -160,15 +29,15 @@ export default async function Page({ params }: Params) {
         lake,
         sections: grouped,
         tabs,
-        metadata: { barangay, distance, depth, area, fish },
-        category,
-        image,
-        //isLoggedIn: !!session,
+        metadata: lake.metadata,
+        category: lake.category,
+        image: lake.image,
       }}
     />
   );
+}
 
-  {/*(
+{/*(
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 ">
 
 
@@ -361,4 +230,3 @@ export default async function Page({ params }: Params) {
     </div>
   );
   */}
-}

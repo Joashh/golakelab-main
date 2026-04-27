@@ -1,17 +1,7 @@
-import ProgressLink from "@/app/component/progresslink";
-import Link from "next/link";
-import { FiMapPin, FiSun, FiUsers, FiCloud, FiFeather, FiClock, FiTrendingDown, FiLayers, FiDroplet } from "react-icons/fi";
-import { RiLeafFill } from "react-icons/ri";
-import { IoArrowForward } from "react-icons/io5";
-import { FaRulerHorizontal } from "react-icons/fa";
-import { ChevronRight } from "lucide-react";
-import LakeGrid from "@/app/component/wrappercard";
-import SmileySurvey from "@/app/component/smileysurvey";
-import RelatedNews from "@/app/component/relatednews";
-import RelatedJournal from "@/app/component/relatesJournal";
 import { CategoryPage } from "./CategoryPage";
-
-
+import { getCategoryBySlug } from "@/app/lib/data";
+import { getLakesByCategoryId } from "@/app/lib/data";
+import { getPartnersByCategoryId } from "@/app/lib/data";
 
 type Params = {
     params: Promise<{
@@ -34,36 +24,6 @@ interface Props {
 
 
 
-
-
-async function getCategoryBySlug(slug: string) {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake-category?slug=${slug}`,
-        { cache: "no-store" }
-    );
-
-    const data = await res.json();
-    return data[0];
-}
-
-async function getPartnersByCategoryId(categoryId: number) {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/partner?lake-category=${categoryId}&_embed&order=asc&orderby=date`,
-        { cache: "no-store" }
-    );
-    const data = await res.json();
-    return data;
-}
-
-
-async function getLakesByCategoryId(categoryId: number) {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wp/v2/lake?lake-category=${categoryId}&_embed`,
-        { cache: "no-store" }
-    );
-    return res.json();
-}
-
 export default async function Page({ params }: Params) {
 
 
@@ -80,24 +40,30 @@ export default async function Page({ params }: Params) {
 
 
     const partners: Partner[] = await getPartnersByCategoryId(category.id);
-    const description = category.acf?.partner_description || "";
-    const yearsofresearch = category.acf?.years_of_research?.toString() || "N/A";
-    const interconnected = category.acf?.interconnected_crater_lakes?.toString() || "N/A";
-    const partnerinsti = category.acf?.partner_institutions?.toString() || "N/A";
-    const conservationproj = category.acf?.conservation_projects?.toString() || "N/A";
-    const aboutregion = category.acf?.about_this_region || "N/A";
+   
 
     return <CategoryPage
         category={category}
         lakes={lakes}
         partners={partners}
-        description={description}
-        yearsofresearch={yearsofresearch}
-        interconnected={interconnected}
-        partnerinsti={partnerinsti}
-        conservationproj={conservationproj}
-        aboutthisregion={aboutregion}
-    />
+        
+    />;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     {/*
             <div className="mb-6 sm:mb-8">

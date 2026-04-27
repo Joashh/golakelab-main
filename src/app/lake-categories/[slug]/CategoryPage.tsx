@@ -16,12 +16,6 @@ interface LakeDetailPageProps {
   category: any;
   lakes: any[];
   partners: Partner[];
-  description: string;
-  aboutthisregion: string;
-  yearsofresearch: string;
-  interconnected: string;
-  partnerinsti: string;
-  conservationproj: string;
 }
 
 type Lake = {
@@ -40,54 +34,15 @@ type Lake = {
 };
 
 
-
-
-
-
-export function CategoryPage({ category, lakes, partners, description, yearsofresearch, interconnected, partnerinsti, conservationproj, aboutthisregion
+export function CategoryPage({ category, lakes, partners
 }: LakeDetailPageProps) {
   const { categoryId } = useParams<{ categoryId: string }>();
   const [searchQuery, setSearchQuery] = useState('');
   const [depthFilter, setDepthFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('overview');
 
-  const normalizedLakes: Lake[] = lakes.map((lake) => {
-    const acf = lake.acf || {};
 
-    const getNumber = (val: any) => {
-      if (val === null || val === undefined || val === "") return 0;
-      return parseFloat(val) || 0;
-    };
-
-    const getArray = (val: any) => {
-      if (!val) return [];
-      if (Array.isArray(val)) return val;
-      return [val];
-    };
-
-    return {
-      id: lake.id,
-      slug: lake.slug,
-      name: lake.title?.rendered || "",
-      image:
-        lake._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
-        "/placeholder.jpg",
-      shortDescription:
-        lake.excerpt?.rendered || lake.content?.rendered || "",
-
-      // ✅ FIXED
-      barangays: getArray(acf.barangay),
-      fishSpecies: getArray(acf.fish_species),
-
-      number_species: getNumber(acf.number_of_fish_species),
-      maxDepth: getNumber(acf.maximum_depth),
-      latitude: getNumber(acf.latitude),
-      longitude: getNumber(acf.longitude),
-      area: getNumber(acf.surface_area),
-    };
-  });
-
-  const lakeMapPoints = normalizedLakes
+  const lakeMapPoints = lakes
     .filter((lake) => lake.latitude && lake.longitude)
     .map((lake) => ({
       id: lake.id.toString(),
@@ -106,7 +61,7 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
   }, []);
 
   const filteredLakes = useMemo(() => {
-    let filtered: Lake[] = normalizedLakes;
+    let filtered: Lake[] = lakes;
 
     // Search filter
     if (searchQuery) {
@@ -130,35 +85,35 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
     }
 
     return filtered;
-  }, [normalizedLakes, searchQuery, depthFilter]);
+  }, [lakes, searchQuery, depthFilter]);
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const totalArea = normalizedLakes.reduce(
+    const totalArea = lakes.reduce(
       (sum, lake) => sum + (lake.area || 0),
       0
     );
 
     const avgDepth =
-      normalizedLakes.reduce(
+      lakes.reduce(
         (sum, lake) => sum + (lake.maxDepth || 0),
         0
-      ) / normalizedLakes.length;
+      ) / lakes.length;
 
-    const totalSpecies = normalizedLakes.reduce(
+    const totalSpecies = lakes.reduce(
       (sum, lake) => sum + (lake.number_species || 0),
       0
     );
 
     return {
-      totalLakes: normalizedLakes.length,
+      totalLakes: lakes.length,
       totalArea: totalArea.toFixed(2),
       avgDepth: avgDepth.toFixed(1),
       totalSpecies,
     };
-  }, [normalizedLakes]);
+  }, [lakes]);
 
-  console.log(normalizedLakes.map(l => l.area));
+
 
 
   if (!category) {
@@ -306,7 +261,7 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
               <div className="grid md:grid-cols-2 gap-8 mb-10">
                 <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
                   <h3 className="text-2xl font-bold text-slate-900 mb-4">About This Region</h3>
-                  <p className='text-black/60 text-justify '>{aboutthisregion}</p>
+                  <p className='text-black/60 text-justify '>{category.aboutregion}</p>
                 </div>
 
                 <LakesMap points={lakeMapPoints} />
@@ -322,11 +277,11 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
                   {lakes.map((lake) => (
                     <ProgressLink
                       key={lake.id}
-                      href={`/lake/${lake.id}`}
+                      href={`/lakes/${lake.slug}`}
                       className="p-4 border border-slate-200 rounded-xl hover:border-sky-400 hover:bg-sky-50 transition-all text-center group"
                     >
                       <Droplets className="size-6 text-sky-600 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                      <p className="text-sm font-medium text-slate-900"> {(lake.title.rendered || "").replace(" Lake", "")}</p>
+                      <p className="text-sm font-medium text-slate-900"> {(lake.name || "").replace(" Lake", "")}</p>
                     </ProgressLink>
                   ))}
                 </div>
@@ -575,9 +530,9 @@ export function CategoryPage({ category, lakes, partners, description, yearsofre
         </div>
 
 
-        {description && (
+        {category.description && (
           <p className="text-sm mb-8 text-gray-600   leading-relaxed max-w-4xl mx-auto text-center">
-            {description}
+            {category.description}
           </p>
         )}
 

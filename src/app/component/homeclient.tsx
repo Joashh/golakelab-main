@@ -1,14 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router';
-import { Header } from './header';
 import { BookOpen, ArrowRight, Users, Sparkles, MessageSquare, ArrowUp, ArrowDown, Share2, Bookmark, Plus, TrendingUp, Clock, Award } from 'lucide-react';
-import Footer from './footer';
 import { SegmentedNav } from './SegmentedNav';
 import { motion } from 'motion/react';
 import ProgressLink from './progresslink';
-import { NewsSection } from './NewsSection';
-import SmileySurvey from './smileysurvey';
+
 
 type Category = {
   id: number;
@@ -19,75 +15,11 @@ type Category = {
   count?: number;
 };
 
-export default function HomePage({ categories }: { categories: Category[] }) {
+export default function HomePage({ categories, posts }: { categories: Category[]; posts: any[]; }) {
   const [activeSection, setActiveSection] = useState<'about' | 'explore' | 'engage'>('explore');
   const [sortBy, setSortBy] = useState<'hot' | 'new' | 'top'>('hot');
-  const [posts, setPosts] = useState<any[]>([]);
-  const [comments, setComments] = useState<Record<number, any[]>>({});
-  const [loading, setLoading] = useState(true);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_WP_URL;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [postsRes, commentsRes] = await Promise.all([
-          fetch(`${BASE_URL}/wp-json/wp/v2/posts?_embed`),
-          fetch(`${BASE_URL}/wp-json/wp/v2/comments?per_page=100`)
-        ]);
-
-        const postsData = await postsRes.json();
-        const commentsData = await commentsRes.json();
-
-        setPosts(postsData);
-
-        // group comments
-        const grouped: Record<number, any[]> = {};
-        commentsData.forEach((c: any) => {
-          if (!grouped[c.post]) grouped[c.post] = [];
-          grouped[c.post].push(c);
-        });
-
-        setComments(grouped);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const stripHtml = (html: string) =>
-    html.replace(/<[^>]+>/g, '');
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
-  };
-
-  const normalizedPosts = posts.map((post) => {
-    const author = post._embedded?.author?.[0]?.name || 'Anonymous';
-
-    return {
-      id: post.id,
-      author,
-      avatar: getInitials(author),
-      timestamp: new Date(post.date).toLocaleDateString(),
-      category:
-        post._embedded?.["wp:term"]?.[0]?.[0]?.name || 'Community',
-      title: post.title?.rendered || '',
-      content: stripHtml(post.content?.rendered || ''),
-      upvotes: 0, // WP doesn't have this yet
-      comments: comments[post.id]?.length || 0,
-      tags: post._embedded?.["wp:term"]?.[1]?.map((t: any) => t.name) || [],
-    };
-  });
 
   const getAvatarColor = (name: string) => {
     const colors = [
@@ -100,51 +32,10 @@ export default function HomePage({ categories }: { categories: Category[] }) {
     return colors[name.charCodeAt(0) % colors.length];
   };
 
-  const forumPosts = normalizedPosts;
+  const forumPosts = posts;
 
   return (
     <div className="min-h-screen flex flex-col bg-linear-to-br from-sky-50 via-white to-emerald-50">
-
-
-      <section className="relative bg-gradient-to-br from-sky-600 via-blue-600 to-emerald-600 text-white py-20 overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img
-            src="images/Balinsasayao_Twin_Lakes.JPG"
-            alt="Lake aerial view"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-sky-600/50 via-blue-600/40 to-emerald-600/50" />
-        </div>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
-              <Sparkles className="size-4" />
-              <span className="text-sm">Knowledge Hub for Small Lake Conservation</span>
-            </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-              GoLake Lab
-            </h1>
-            <p className="text-xl sm:text-2xl mb-3 text-sky-100 max-w-3xl mx-auto">
-              Governance Leadership, Advocacy for Knowledge Enhancement
-            </p>
-            <p className="text-lg mb-8 text-sky-100 max-w-2xl mx-auto">
-              Laboratory for Small Lakes
-            </p>
-            <p className="text-lg text-sky-50 max-w-3xl mx-auto leading-relaxed">
-              A centralized knowledge-sharing portal dedicated to advancing research,
-              governance, and sustainability of small lakes in the Philippines.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      <NewsSection />
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

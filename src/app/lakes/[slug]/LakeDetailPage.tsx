@@ -42,7 +42,7 @@ type LakeDetailPageProps = {
     };
     category: any;
     image: string;
-    //isLoggedIn: boolean;
+    
   };
 };
 
@@ -81,7 +81,7 @@ export default function LakeDetailPage({ data }: LakeDetailPageProps) {
       <main className="flex-1">
         {/* Hero Section */}
         <div className="relative h-96 overflow-hidden">
-          <img src={image} alt={lake.title.rendered} className="w-full h-full object-cover" />
+          <img src={image} alt={lake.name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
           <div className="absolute inset-0 flex items-end">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
@@ -92,9 +92,9 @@ export default function LakeDetailPage({ data }: LakeDetailPageProps) {
                 <ArrowLeft className="size-4" />
                 <span>Back to Category</span>
               </ProgressLink>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">{lake.title.rendered}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">{lake.name}</h1>
               <p className="text-lg text-white/90 max-w-3xl line-clamp-2">
-                {stripHtml(lake.content?.rendered || '')}
+                {stripHtml(lake.description || '')}
               </p>
             </div>
           </div>

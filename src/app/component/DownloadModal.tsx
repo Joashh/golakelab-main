@@ -2,6 +2,11 @@
 import { X, Download, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import {
+  trackJournalView,
+  trackJournalDownload,
+  submitDownloadForm
+} from "@/app/lib/data";
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -25,79 +30,32 @@ export function DownloadModal({ isOpen, onClose, journal }: DownloadModalProps) 
 
     sessionStorage.setItem(key, "true");
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/custom/v1/track-view/${journal.id}`,
-      { method: "POST" }
-    )
-      .then(async (res) => {
-        console.log("VIEW STATUS:", res.status);
-
-        if (!res.ok) {
-          const text = await res.text();
-          console.error("VIEW ERROR BODY:", text);
-        } else {
-          const data = await res.json().catch(() => null);
-          console.log("VIEW SUCCESS:", data);
-        }
-      })
-      .catch((err) => {
-        console.error("VIEW FETCH ERROR:", err);
-      });
-
-  }, [isOpen, journal?.id]); // ✅ fixed
+    trackJournalView(journal.id).catch(console.error);
+  }, [isOpen, journal?.id]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      // Submit form
-      const submitRes = await fetch(
-        `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/custom/v1/download-submit`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            affiliation: formData.affiliation,
-            purpose: formData.purpose,
-            newsletter: formData.newsletter,
-            file_id: journal.id,
-            file_name: journal.title?.rendered,
-          }),
-        }
-      );
+      await submitDownloadForm({
+        name: formData.name,
+        affiliation: formData.affiliation,
+        purpose: formData.purpose,
+        newsletter: formData.newsletter,
+        file_id: journal.id,
+        file_name: journal.title?.rendered,
+      });
 
-      console.log("SUBMIT STATUS:", submitRes.status);
+      const downloadData = await trackJournalDownload(journal.id);
 
-      const submitData = await submitRes.json().catch(() => null);
-      console.log("SUBMIT RESPONSE:", submitData);
+      console.log("DOWNLOAD RESPONSE:", downloadData);
 
-      // Track download
-      const downloadRes = await fetch(
-        `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/custom/v1/track-download/${journal.id}`,
-        { method: "POST" }
-      );
-
-      console.log("DOWNLOAD STATUS:", downloadRes.status);
-
-      // IMPORTANT: Read the response data
-      const downloadData = await downloadRes.json();
-      console.log("DOWNLOAD RESPONSE DATA:", downloadData);
-
-      if (downloadData.success) {
-        console.log(`✅ Download counted! New total: ${downloadData.downloads}`);
-        console.log(`📊 WPDM downloads: ${downloadData.wpdm_downloads}`);
-      }
-
-      // Open file
       window.open(journal.download_url, "_blank");
       setSubmitted(true);
 
-    } catch (error) {
-      console.error("DOWNLOAD ERROR:", error);
+    } catch (err) {
+      console.error(err);
       window.open(journal.download_url, "_blank");
     }
   };
