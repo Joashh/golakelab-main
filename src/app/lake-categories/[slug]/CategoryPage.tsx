@@ -188,25 +188,39 @@ export function CategoryPage({ category, lakes, partners
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Quick Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-12 ">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-white shadow-md rounded-xl py-7 border border-gray-200">
-            <TabsTrigger value="overview" className="flex items-center gap-2 ">
-              <Info className="size-4" />
-              <span className="hidden sm:inline">Overview</span>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 bg-white to-gray-50 px-4  py-5 rounded-2xl border border-gray-200 shadow-sm">
+            <TabsTrigger
+              value="overview"
+              className="flex items-center justify-center gap-2 px-2 sm:px-4 py-2.5 sm:py-3 rounded-md bg-white hover:bg-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-sky-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-300 group"
+            >
+              <Info className="size-4 sm:size-5 text-sky-500 group-data-[state=active]:text-white transition-colors" />
+              <span className="text-xs sm:text-sm md:text-base font-medium truncate">Overview</span>
             </TabsTrigger>
-            <TabsTrigger value="lakes" className="flex items-center gap-2">
-              <Droplets className="size-4" />
-              <span className="hidden sm:inline">Lakes</span>
+
+            <TabsTrigger
+              value="lakes"
+              className="flex items-center justify-center gap-2 px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-white/50 hover:bg-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-300 group"
+            >
+              <Droplets className="size-4 sm:size-5 text-emerald-500 group-data-[state=active]:text-white transition-colors" />
+              <span className="text-xs sm:text-sm md:text-base font-medium truncate">Lakes</span>
             </TabsTrigger>
-            <TabsTrigger value="data" className="flex items-center gap-2">
-              <Database className="size-4" />
-              <span className="hidden sm:inline">Data</span>
+
+            <TabsTrigger
+              value="data"
+              className="flex items-center justify-center gap-2 px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-white/50 hover:bg-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-300 group"
+            >
+              <Database className="size-4 sm:size-5 text-purple-500 group-data-[state=active]:text-white transition-colors" />
+              <span className="text-xs sm:text-sm md:text-base font-medium truncate">Data</span>
             </TabsTrigger>
-            <TabsTrigger value="governance" className="flex items-center gap-2">
-              <Users className="size-4" />
-              <span className="hidden sm:inline">Governance</span>
+
+            <TabsTrigger
+              value="governance"
+              className="flex items-center justify-center gap-2 px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-white/50 hover:bg-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-300 group"
+            >
+              <Users className="size-4 sm:size-5 text-orange-500 group-data-[state=active]:text-white transition-colors" />
+              <span className="text-xs sm:text-sm md:text-base font-medium truncate">Governance</span>
             </TabsTrigger>
           </TabsList>
-
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-8">
             <motion.div

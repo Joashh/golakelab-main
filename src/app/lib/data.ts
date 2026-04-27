@@ -37,7 +37,7 @@ export async function getNews() {
     content: item.content?.rendered || '',
     date: item.date,
     author: item._embedded?.author?.[0]?.name || 'Unknown',
-    category: item.field || "Uncategorized"
+    category: item._embedded?.["wp:term"]?.[0]?.[0]?.name || "Uncategorized"
   }));
 }
 
@@ -110,7 +110,7 @@ export async function getCommunityPost() {
 
 export async function getCategoryBySlug(slug: string) {
   const res = await fetch(
-    `${BASE_URL}/wp-json/wp/v2/lake-category?slug=${slug}`,
+    `${BASE_URL}/wp-json/wp/v2/lake-category?slug=${slug}&_embed`,
     { next: { revalidate: 60 } }
   );
 
@@ -128,6 +128,7 @@ export async function getCategoryBySlug(slug: string) {
     partnerinsti: category.acf?.partner_institutions?.toString() || "N/A",
     conservationproj: category.acf?.conservation_projects?.toString() || "N/A",
     aboutregion: category.acf?.about_this_region || "N/A",
+    image: category.image || category.z_taxonomy_image_url || "/placeholder.jpg",
   };
 }
 
