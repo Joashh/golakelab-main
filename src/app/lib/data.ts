@@ -82,20 +82,33 @@ export async function getCommunityPost() {
 
     const normalizedPosts = postsData.map((post: any) => {
       const author = post._embedded?.author?.[0]?.name || 'Anonymous';
+      const terms = post._embedded?.["wp:term"]?.flat() || [];
+      const lakeTerm = terms.find((t: any) => t.taxonomy === "lake-category");
+      const defaultCategory = terms.find((t: any) => t.taxonomy === "category");
 
       return {
         id: post.id,
         author,
         avatar: getInitials(author),
+        categorySlug: lakeTerm?.slug || defaultCategory?.slug || null,
         timestamp: new Date(post.date).toLocaleDateString(),
+
+        // ✅ FIXED
         category:
-          post._embedded?.["wp:term"]?.[0]?.[0]?.name || 'Community',
+          terms.find((t: any) => t.taxonomy === "lake-category")?.name ||
+          terms.find((t: any) => t.taxonomy === "category")?.name ||
+          "Community",
+
         title: post.title?.rendered || '',
-        content: stripHtml(post.content?.rendered || ''),
+        content: post.content?.rendered || '',
         upvotes: 0,
         comments: grouped[post.id]?.length || 0,
+
+        // optional improvement
         tags:
-          post._embedded?.["wp:term"]?.[1]?.map((t: any) => t.name) || [],
+          terms
+            .filter((t: any) => t.taxonomy === "post_tag")
+            .map((t: any) => t.name),
       };
     });
 

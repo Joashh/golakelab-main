@@ -41,11 +41,6 @@ export function Tabs({ grouped, tabs }: TabsProps) {
         key={section.id}
         className="bg-white 0 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow"
       >
-
-        <h3 className="text-lg font-semibold text-gray-900  mb-3">
-          {section.title.rendered}
-        </h3>
-
         <div
           className="prose prose-p:leading-relaxed prose-p:my-4 [&_.wp-block-heading]:mt-6 [&_.wp-block-heading]:mb-1 max-w-none prose-gray dark:prose-invert [&_.wp-block-heading]:font-bold prose-strong:font-bold prose-b:font-bold text-justify prose-p:leading-relaxed prose-img:mx-auto prose-img:rounded-xl prose-img:shadow [&_.aligncenter]:mx-auto [&_.aligncenter]:text-center [&_.wp-block-image]:text-center [&_.wp-block-image_img]:mx-auto [&_.wp-block-image]:my-6"
           dangerouslySetInnerHTML={{

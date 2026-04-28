@@ -4,7 +4,7 @@ import { BookOpen, ArrowRight, Users, Sparkles, MessageSquare, ArrowUp, ArrowDow
 import { SegmentedNav } from './SegmentedNav';
 import { motion } from 'motion/react';
 import ProgressLink from './progresslink';
-
+import he from "he";
 
 type Category = {
   id: number;
@@ -120,9 +120,9 @@ export default function HomePage({ categories, posts }: { categories: Category[]
                   <motion.div
                     key={category.id}
                     whileHover={{ scale: 1.02 }}
-                    className="group relative bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all"
+                    className="group relative bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all flex flex-col h-full"
                   >
-                    <div className="relative h-64 overflow-hidden bg-slate-200">
+                    <div className="relative h-64 overflow-hidden bg-slate-200 flex-shrink-0">
                       <img
                         src={category.image}
                         alt={category.name}
@@ -131,13 +131,15 @@ export default function HomePage({ categories, posts }: { categories: Category[]
                       <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
                     </div>
 
-                    <div className="p-8">
-                      <h3 className="text-2xl font-bold text-slate-900 mb-3">{category.name}</h3>
-                      <p className="text-slate-600 mb-6 leading-relaxed">{category.description}</p>
+                    <div className="p-8 flex flex-col flex-1">
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-slate-900 mb-3">{category.name}</h3>
+                        <p className="text-slate-600 mb-6 leading-relaxed text-justify">{category.description}</p>
+                      </div>
 
                       <ProgressLink
                         href={`/lake-categories/${category.slug}`}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-slate-600 to-slate-700 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all group"
+                        className="inline-flex  items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-slate-600 to-slate-700 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all group w-full mt-auto"
                       >
                         <span>Explore Lakes</span>
                         <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
@@ -228,16 +230,21 @@ export default function HomePage({ categories, posts }: { categories: Category[]
                       </div>
 
                       {/* Post Content */}
-                      <div className="flex-1 p-4">
+                      <div className="flex-1 p-6">
                         {/* Post Header */}
                         <div className="flex items-center gap-3 mb-3">
                           <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getAvatarColor(post.author)} flex items-center justify-center text-white text-xs font-bold`}>
                             {post.avatar}
                           </div>
                           <div className="flex items-center gap-2 text-sm text-slate-600 flex-wrap">
-                            <span className="font-semibold text-slate-900">{post.author}</span>
+                            <span className="font-semibold text-slate-900">{post.author ? post.author.charAt(0).toUpperCase() + post.author.slice(1) : "Unknown"}</span>
                             <span>•</span>
-                            <span className="text-sky-600 font-medium">{post.category}</span>
+                            <ProgressLink
+                              href={`/lake-categories/${post.categorySlug}`}
+                              className="text-sky-600 font-medium hover:underline"
+                            >
+                              {post.category}
+                            </ProgressLink>
                             <span>•</span>
                             <span>{post.timestamp}</span>
                           </div>
@@ -249,9 +256,10 @@ export default function HomePage({ categories, posts }: { categories: Category[]
                         </h3>
 
                         {/* Post Content */}
-                        <p className="text-slate-700 mb-3 leading-relaxed">
-                          {post.content}
-                        </p>
+                        <div className="text-slate-700 mb-3 leading-relaxed text-justify news-content" dangerouslySetInnerHTML={{
+                          __html: he.decode(post.content)
+                        }} />
+
 
                         {/* Tags */}
                         <div className="flex items-center gap-2 mb-3 flex-wrap">

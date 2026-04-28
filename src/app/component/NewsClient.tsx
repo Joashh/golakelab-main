@@ -82,7 +82,9 @@ export default function NewsClient({ news }: { news: NewsItem[] }) {
                                     </span>
                                     <span className="flex items-center gap-1.5">
                                         <User className="size-3.5" />
-                                        {item.author}
+                                        {item.author
+                                            ? item.author.charAt(0).toUpperCase() + item.author.slice(1)
+                                            : "Unknown"}
                                     </span>
                                 </div>
 
@@ -148,8 +150,10 @@ export default function NewsClient({ news }: { news: NewsItem[] }) {
                                             })}
                                         </span>
                                         <span className="flex items-center gap-1.5">
-                                            <User className="size-4" />
-                                            {selectedNews.author}
+                                            <User className="size-3.5" />
+                                            {selectedNews.author
+                                                ? selectedNews.author.charAt(0).toUpperCase() + selectedNews.author.slice(1)
+                                                : "Unknown"}
                                         </span>
                                     </div>
                                 </div>
