@@ -1,7 +1,9 @@
 import { FaFacebookF, FaTwitter, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { Eye } from 'lucide-react';
 import SmileySurvey from "./smileysurvey";
-export default function Footer() {
+import { getMatomoVisitors } from "../lib/data";
+export default async function Footer() {
+    const visitorstotal = await getMatomoVisitors();
 
     return (
         <>
@@ -106,7 +108,7 @@ export default function Footer() {
                             {/* Left Side - Visitor Counter */}
                             <div className="flex items-center gap-2">
                                 <Eye className="size-4" />
-                                <span>Visitors: 0</span>
+                                <span>Visitors: {visitorstotal.nb_visits}</span>
                             </div>
 
                             {/* Right Side - Copyright and Message */}

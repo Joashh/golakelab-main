@@ -373,3 +373,25 @@ export async function submitDownloadForm(payload: any) {
 
   return res.json();
 }
+
+export async function getMatomoVisitors() {
+  const form = new URLSearchParams();
+
+  form.append("module", "API");
+  form.append("method", "VisitsSummary.get");
+  form.append("idSite", "1");
+  form.append("period", "day");
+  form.append("date", "today");
+  form.append("format", "JSON");
+  form.append("token_auth", process.env.MATOMO_TOKEN!);
+
+  const res = await fetch(
+    `${BASE_URL}/matomo/index.php`,
+    {
+      method: "POST",
+      body: form,
+    }
+  );
+
+  return res.json();
+}
