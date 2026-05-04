@@ -1,13 +1,24 @@
+'use client'
 import { FaFacebookF, FaTwitter, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { Eye } from 'lucide-react';
+import { useEffect, useState } from "react";
 import SmileySurvey from "./smileysurvey";
 import { getMatomoVisitors } from "../lib/data";
-export default async function Footer() {
-    const visitorstotal = await getMatomoVisitors();
+export default function Footer() {
+    const [visitors, setVisitors] = useState(0);
 
+    useEffect(() => {
+        // Ask for visitor count when page loads
+        fetch('/api/matomo')
+            .then(res => res.json())
+            .then(data => {
+                console.log('Matomo data:', data);
+                setVisitors(data.nb_visits);
+            });
+    }, []);
     return (
         <>
-         
+
             <footer
                 className="w-full px-6 md:px-10 py-10 border-t border-gray-200 dark:border-gray-700  bg-linear-to-br from-slate-900 to-slate-800 text-white mt-auto dark:bg-[#1A202C]"
 
@@ -108,7 +119,7 @@ export default async function Footer() {
                             {/* Left Side - Visitor Counter */}
                             <div className="flex items-center gap-2">
                                 <Eye className="size-4" />
-                                <span>Visitors: {visitorstotal.nb_visits}</span>
+                                <span>Visitors: {visitors}</span>
                             </div>
 
                             {/* Right Side - Copyright and Message */}
@@ -122,7 +133,7 @@ export default async function Footer() {
                     </div>
                 </div>
             </footer>
-            
+
         </>
     );
 }
