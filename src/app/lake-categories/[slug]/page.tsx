@@ -1,5 +1,5 @@
 import { CategoryPage } from "./CategoryPage";
-import { getCategoryBySlug } from "@/app/lib/data";
+import { getCategoryBySlug} from "@/app/lib/data";
 import { getLakesByCategoryId } from "@/app/lib/data";
 import { getPartnersByCategoryId } from "@/app/lib/data";
 
@@ -29,6 +29,8 @@ export default async function Page({ params }: Params) {
 
     const { slug } = await params;
 
+
+
     const category = await getCategoryBySlug(slug);
 
     console.log("params:", slug);
@@ -40,13 +42,19 @@ export default async function Page({ params }: Params) {
 
 
     const partners: Partner[] = await getPartnersByCategoryId(category.id);
-   
+    const chartData = lakes.map(lake => ({
+        name: lake.name,
+        fishSpecies: lake.number_species, // map correctly
+        area: lake.area,
+        depth: lake.maxDepth,
+    }));
 
     return <CategoryPage
+        bardata={chartData}
         category={category}
         lakes={lakes}
         partners={partners}
-        
+
     />;
 
 

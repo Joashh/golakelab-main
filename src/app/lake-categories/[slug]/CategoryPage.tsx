@@ -11,11 +11,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/component/tabs';
 import { Partner } from '@/app/types/partner';
 import ProgressLink from '@/app/component/progresslink';
 import SmileySurvey from '@/app/component/smileysurvey';
+import LakeBarChart from '@/app/component/BarGraph';
 
 interface LakeDetailPageProps {
   category: any;
   lakes: any[];
   partners: Partner[];
+  bardata: any;
 }
 
 type Lake = {
@@ -34,7 +36,7 @@ type Lake = {
 };
 
 
-export function CategoryPage({ category, lakes, partners
+export function CategoryPage({ category, lakes, partners, bardata
 }: LakeDetailPageProps) {
   const { categoryId } = useParams<{ categoryId: string }>();
   const [searchQuery, setSearchQuery] = useState('');
@@ -512,7 +514,14 @@ export function CategoryPage({ category, lakes, partners
             </motion.div>
           </TabsContent>
         </Tabs>
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200" >
+          <LakeBarChart data={bardata} />
+        </div>
+
+
       </main>
+
+
 
       <div className="py-18 p-6  bg-gray-50 border  border-gray-200">
         <h2 className="text-xl font-semibold text-gray-900  text-center mb-6">

@@ -48,6 +48,7 @@ type LakeDetailPageProps = {
 
 export default function LakeDetailPage({ data }: LakeDetailPageProps) {
   const { lake, sections, tabs, metadata, category, image } = data;
+  
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const stripHtml = (html: string) =>
