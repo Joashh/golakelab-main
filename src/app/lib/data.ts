@@ -345,6 +345,29 @@ export async function getAllJournals() {
   return res.json();
 }
 
+export async function getSpecificJournals(categoryId: number) {
+  const res = await fetch(
+    `${BASE_URL}/wp-json/wp/v2/wpdmpro?_embed&per_page=50&wpdmcategory=${categoryId}`
+  );
+  
+  if (!res.ok) {
+    throw new Error(`Failed to fetch category ${categoryId}`);
+  }
+  
+  return res.json();
+}
+
+export async function getJournalCategoryIdFromSlug(slug: string) {
+  const res = await fetch(
+    `${BASE_URL}/wp-json/wp/v2/wpdmcategory?slug=${slug}`
+  );
+  
+  if (!res.ok) return null;
+  
+  const categories = await res.json();
+  return categories.length > 0 ? categories[0].id : null;
+}
+
 export async function trackJournalView(journalId: number) {
   return fetch(
     `${BASE_URL}/wp-json/custom/v1/track-view/${journalId}`,

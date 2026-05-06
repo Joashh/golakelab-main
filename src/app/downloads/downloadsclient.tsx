@@ -1,16 +1,19 @@
 "use client";
-
 import { useState } from "react";
 import JournalCard from "../component/journalcard";
 import {
   Download,
   FileText,
   Database,
+  ExternalLink,
+  ArrowRight,
   Map,
   FileSpreadsheet,
   MoreHorizontal
 } from "lucide-react";
 import { motion } from 'motion/react';
+import ProgressLink from "../component/progresslink";
+
 
 export default function DownloadsClient({ journals }: any) {
 
@@ -26,13 +29,39 @@ export default function DownloadsClient({ journals }: any) {
   }
   const [selectedFile, setSelectedFile] = useState<any>(null);
 
+  const decodeHtml = (str: string) => {
+    if (typeof window === 'undefined') {
+     
+      return str.replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+    }
+
+    // Client-side: use DOM method
+    const txt = document.createElement("textarea");
+    txt.innerHTML = str;
+    return txt.value;
+  };
+
 
   const grouped = journals.reduce((acc: any, journal: any) => {
-    const catName =
-      journal._embedded?.["wp:term"]?.[0]?.[0]?.name || "Uncategorized";
+    const category = journal._embedded?.["wp:term"]?.[0]?.[0];
 
-    if (!acc[catName]) acc[catName] = [];
-    acc[catName].push(journal);
+    if (!category) return acc;
+
+    const { name, slug } = category;
+
+    if (!acc[slug]) {
+      acc[slug] = {
+        title: name,
+        slug,
+        items: []
+      };
+    }
+
+    acc[slug].items.push(journal);
 
     return acc;
   }, {});
@@ -60,6 +89,7 @@ export default function DownloadsClient({ journals }: any) {
   const sortedCategories = Object.entries(grouped).sort(
     ([aTitle], [bTitle]) => getOrder(aTitle) - getOrder(bTitle)
   );
+
 
 
   return (
@@ -92,27 +122,35 @@ export default function DownloadsClient({ journals }: any) {
           </p>
         </div>
         <div className="grid md:grid-cols-2 gap-8">
-          {sortedCategories.map(([title, items]: any, index) => {
-            const Icon = getCategoryIcon(title);
+          {sortedCategories.map(([slug, cat]: any) => {
+            const Icon = getCategoryIcon(cat.title);
+
 
             return (
               <div
-                key={title}
+                key={cat.slug || slug}
                 className="bg-linear-to-br from-sky-50 to-white rounded-2xl p-6 border border-sky-200 shadow-lg"
               >
                 {/* Header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <Icon className="size-6 text-sky-600" />
+                <div className="flex items-center gap-3 mb-6 justify-between">
+                  <div className="flex items-center gap-2 ">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      <Icon className="size-6 text-sky-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      <span>{decodeHtml(cat.title)}</span>
+                    </h2>
                   </div>
-                  <h2 className="text-xl font-bold text-slate-900">
-                    <span dangerouslySetInnerHTML={{ __html: title }} />
-                  </h2>
+
+                  <ProgressLink href={`downloads/${cat.slug}`} className="flex gap-1 items-center text-blue-500 cursor-pointer">
+                    <ExternalLink className="size-6" />
+                  </ProgressLink>
+
                 </div>
 
                 {/* Items */}
                 <div className="space-y-3">
-                  {items.map((journal: any) => (
+                  {cat.items.map((journal: any) => (
                     <JournalCard
                       key={journal.id}
                       journal={journal}

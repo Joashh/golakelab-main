@@ -20,7 +20,9 @@ export default function ProgressLink({ href, children, ...props }: ProgressLinkP
   }, [pathname]);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (pathname === href) {
+    const cleanHref = href.startsWith("/") ? href : `/${href}`;
+    
+    if (pathname === cleanHref) {
       e.preventDefault();
       return;
     }

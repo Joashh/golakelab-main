@@ -65,7 +65,7 @@ export function CategoryPage({ category, lakes, partners, bardata
   const filteredLakes = useMemo(() => {
     let filtered: Lake[] = lakes;
 
-    // Search filter
+    
     if (searchQuery) {
       filtered = filtered.filter((lake) =>
         lake.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -75,7 +75,7 @@ export function CategoryPage({ category, lakes, partners, bardata
       );
     }
 
-    // Depth filter
+    
     if (depthFilter !== 'all') {
       filtered = filtered.filter((lake) => {
         const depth = lake.maxDepth;

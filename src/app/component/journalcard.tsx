@@ -66,7 +66,7 @@ export default function JournalCard({ journal, onClick }: any) {
             <DownloadModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                journal={journal} // ✅ pass full journal
+                journal={journal} 
             />
         </div>
     );

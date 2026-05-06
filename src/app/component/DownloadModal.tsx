@@ -7,6 +7,7 @@ import {
   trackJournalDownload,
   submitDownloadForm
 } from "@/app/lib/data";
+import he from "he";
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -83,7 +84,7 @@ export function DownloadModal({ isOpen, onClose, journal }: DownloadModalProps) 
               <Download className="size-6" />
               <div>
                 <h2 className="font-bold text-xl">Download Data</h2>
-                <p className="text-sm text-sky-100">{journal?.title?.rendered}</p>
+                <p className="text-sm text-sky-100">{he.decode(journal?.title?.rendered)}</p>
               </div>
             </div>
           </div>
